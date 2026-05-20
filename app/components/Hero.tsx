@@ -9,9 +9,9 @@ const stats = [
 ];
 
 const floatingCards = [
-  { icon: '💆', label: 'BeautyPro', top: '20%', right: '8%', delay: '0s' },
-  { icon: '🛒', label: 'ShopFlow', top: '55%', right: '3%', delay: '1.5s' },
-  { icon: '⛪', label: 'ChurchDesk', top: '75%', left: '5%', delay: '0.8s' },
+  { icon: '💆', label: 'BeautyPro', sub: 'Available Now', top: '22%', right: '6%', delay: '0s' },
+  { icon: '🛒', label: 'ShopFlow', sub: 'Coming Soon', top: '55%', right: '2%', delay: '1.5s' },
+  { icon: '⛪', label: 'ChurchDesk', sub: 'Coming Soon', top: '75%', left: '4%', delay: '0.8s' },
 ];
 
 export default function Hero() {
@@ -20,37 +20,41 @@ export default function Hero() {
 
       {/* Background orbs */}
       <div style={{
-        position: 'absolute', top: '10%', left: '20%',
-        width: 500, height: 500, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(0,102,255,0.12) 0%, transparent 70%)',
-        filter: 'blur(40px)', pointerEvents: 'none',
+        position: 'absolute', top: '10%', left: '18%',
+        width: 520, height: 520, borderRadius: '50%',
+        background: 'radial-gradient(circle, var(--orb1) 0%, transparent 70%)',
+        filter: 'blur(50px)', pointerEvents: 'none',
       }} className="animate-pulse-glow" />
       <div style={{
-        position: 'absolute', bottom: '10%', right: '10%',
-        width: 400, height: 400, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%)',
-        filter: 'blur(40px)', pointerEvents: 'none',
+        position: 'absolute', bottom: '8%', right: '8%',
+        width: 380, height: 380, borderRadius: '50%',
+        background: 'radial-gradient(circle, var(--orb2) 0%, transparent 70%)',
+        filter: 'blur(50px)', pointerEvents: 'none',
       }} className="animate-pulse-glow delay-300" />
 
-      {/* Floating product cards */}
+      {/* Floating cards */}
       {floatingCards.map((card, i) => (
         <div key={i} style={{
           position: 'absolute',
           top: card.top, right: card.right, left: card.left,
-          background: 'rgba(14,20,32,0.9)',
-          border: '1px solid rgba(30,42,66,0.8)',
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
           borderRadius: 14, padding: '12px 18px',
           display: 'flex', alignItems: 'center', gap: 10,
           backdropFilter: 'blur(10px)',
           animationDelay: card.delay,
-          zIndex: 5,
+          zIndex: 5, boxShadow: '0 8px 32px var(--shadow)',
         }} className="animate-float">
           <span style={{ fontSize: 22 }}>{card.icon}</span>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, fontFamily: 'Syne, sans-serif', color: '#E8EDF5' }}>{card.label}</div>
-            <div style={{ fontSize: 11, color: '#00D4FF' }}>Active</div>
+            <div style={{ fontSize: 13, fontWeight: 700, fontFamily: 'Syne, sans-serif', color: 'var(--text)' }}>{card.label}</div>
+            <div style={{ fontSize: 11, color: card.sub === 'Available Now' ? 'var(--accent3)' : 'var(--muted)' }}>{card.sub}</div>
           </div>
-          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#00FF88', marginLeft: 4, boxShadow: '0 0 8px #00FF88' }} />
+          <div style={{
+            width: 8, height: 8, borderRadius: '50%', marginLeft: 4,
+            background: card.sub === 'Available Now' ? 'var(--accent3)' : 'var(--muted)',
+            boxShadow: card.sub === 'Available Now' ? '0 0 8px var(--accent3)' : 'none',
+          }} />
         </div>
       ))}
 
@@ -65,20 +69,15 @@ export default function Hero() {
 
           {/* Headline */}
           <h1 style={{
-            fontSize: 'clamp(42px, 6vw, 80px)',
-            fontWeight: 800,
-            lineHeight: 1.05,
-            letterSpacing: '-0.03em',
-            marginBottom: 28,
-            opacity: 0,
+            fontSize: 'clamp(40px, 6vw, 78px)',
+            fontWeight: 800, lineHeight: 1.05,
+            letterSpacing: '-0.03em', marginBottom: 28, opacity: 0,
           }} className="animate-slide-up delay-100">
-            <span style={{ color: '#E8EDF5' }}>Software that</span>
+            <span style={{ color: 'var(--text)' }}>Software that</span>
             <br />
             <span style={{
-              background: 'linear-gradient(90deg, #0066FF, #00D4FF, #00FF88)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
+              background: 'linear-gradient(90deg, var(--accent2), var(--accent), var(--accent3))',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             }} className="text-glow">
               works for Kenya.
             </span>
@@ -86,17 +85,16 @@ export default function Hero() {
 
           {/* Subtext */}
           <p style={{
-            fontSize: 18, color: '#6B7A99', lineHeight: 1.7,
-            maxWidth: 560, marginBottom: 44,
-            opacity: 0,
+            fontSize: 18, color: 'var(--text2)', lineHeight: 1.75,
+            maxWidth: 560, marginBottom: 44, opacity: 0,
           }} className="animate-slide-up delay-200">
-            Ready-made business software built for Kenyan businesses. 
-            M-Pesa integrated, locally supported, and priced for the Kenyan market. 
-            No developer needed — just plug in and grow.
+            Ready-made business software built for Kenyan businesses.
+            M-Pesa integrated, locally supported, and priced for the Kenyan market.
+            No custom development needed — just plug in and grow.
           </p>
 
-          {/* CTA Buttons */}
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 72, opacity: 0 }} className="animate-slide-up delay-300">
+          {/* CTAs */}
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 56, opacity: 0 }} className="animate-slide-up delay-300">
             <a href="#products" className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
               Explore Products <ArrowRight size={16} />
             </a>
@@ -106,14 +104,14 @@ export default function Hero() {
           </div>
 
           {/* Trust badges */}
-          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', marginBottom: 60, opacity: 0 }} className="animate-slide-up delay-400">
+          <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap', marginBottom: 60, opacity: 0 }} className="animate-slide-up delay-400">
             {[
               { icon: <Globe size={14} />, text: 'Web & Mobile' },
               { icon: <Shield size={14} />, text: 'Secure & Reliable' },
               { icon: <Zap size={14} />, text: 'M-Pesa Ready' },
             ].map((t, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6B7A99', fontSize: 13 }}>
-                <span style={{ color: '#00D4FF' }}>{t.icon}</span>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text2)', fontSize: 13 }}>
+                <span style={{ color: 'var(--accent)' }}>{t.icon}</span>
                 {t.text}
               </div>
             ))}
@@ -122,25 +120,32 @@ export default function Hero() {
           {/* Stats */}
           <div style={{
             display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: 1, background: '#1E2A42', borderRadius: 16,
-            overflow: 'hidden', border: '1px solid #1E2A42',
-            opacity: 0,
+            borderRadius: 16, overflow: 'hidden',
+            border: '1px solid var(--border)', opacity: 0,
           }} className="animate-slide-up delay-500">
             {stats.map((s, i) => (
               <div key={i} style={{
-                background: '#0E1420', padding: '24px 20px', textAlign: 'center',
+                background: 'var(--surface)', padding: '22px 20px', textAlign: 'center',
+                borderRight: i < 3 ? '1px solid var(--border)' : 'none',
               }}>
-                <div style={{ fontSize: 28, fontWeight: 800, fontFamily: 'Syne, sans-serif', color: '#00D4FF', marginBottom: 4 }}>
+                <div style={{ fontSize: 28, fontWeight: 800, fontFamily: 'Syne, sans-serif', color: 'var(--accent)', marginBottom: 4 }}>
                   {s.value}
                 </div>
-                <div style={{ fontSize: 12, color: '#6B7A99', letterSpacing: '0.05em' }}>
+                <div style={{ fontSize: 12, color: 'var(--muted)', letterSpacing: '0.04em' }}>
                   {s.label}
                 </div>
               </div>
             ))}
           </div>
+
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 600px) {
+          .animate-float { display: none; }
+        }
+      `}</style>
     </section>
   );
 }

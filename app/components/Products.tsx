@@ -1,151 +1,143 @@
 'use client';
-import { ArrowRight, CheckCircle } from 'lucide-react';
+import { Check, Zap } from 'lucide-react';
+import { useState } from 'react';
 
-const products = [
+const plans = [
   {
-    emoji: '💆',
-    name: 'BeautyPro',
-    tagline: 'Spa & Salon Management',
-    desc: 'Full-featured management for salons, spas, and barbershops. Appointments, POS, inventory, staff, and M-Pesa payments in one place.',
-    features: ['Appointment booking', 'M-Pesa POS', 'Staff management', 'Inventory tracking', 'WhatsApp notifications'],
-    color: '#FF6B9D',
-    bg: 'rgba(255,107,157,0.06)',
-    border: 'rgba(255,107,157,0.15)',
-    status: 'Available Now',
+    name: 'Starter', monthlyKES: 1500, oneTimeKES: 25000,
+    desc: 'Perfect for small churches, groups, and startups',
+    features: ['1 Software Product', 'Up to 5 users', 'M-Pesa integration', 'Email support', 'Mobile app access', 'Monthly updates'],
+    highlight: false, accentColor: 'var(--muted)',
   },
   {
-    emoji: '🛒',
-    name: 'ShopFlow',
-    tagline: 'Retail & Inventory',
-    desc: 'Smart retail management for shops, supermarkets, and wholesalers. Track stock, sales, suppliers, and cash flow effortlessly.',
-    features: ['Stock management', 'Sales tracking', 'Supplier records', 'Cash & M-Pesa POS', 'Sales reports'],
-    color: '#00D4FF',
-    bg: 'rgba(0,212,255,0.06)',
-    border: 'rgba(0,212,255,0.15)',
-    status: 'Coming Soon',
+    name: 'Business', monthlyKES: 3000, oneTimeKES: 45000,
+    desc: 'For growing businesses that need more power',
+    features: ['2 Software Products', 'Up to 20 users', 'M-Pesa integration', 'WhatsApp notifications', 'Priority support', 'SMS alerts', 'Custom branding', 'Monthly reports'],
+    highlight: true, accentColor: 'var(--accent)',
   },
   {
-    emoji: '⛪',
-    name: 'ChurchDesk',
-    tagline: 'Church & Community',
-    desc: 'Member registry, tithes & offerings tracking, event management, and WhatsApp/SMS blasts for churches and community groups.',
-    features: ['Member registry', 'Contributions tracking', 'Event management', 'SMS/WhatsApp blast', 'Financial reports'],
-    color: '#A78BFA',
-    bg: 'rgba(167,139,250,0.06)',
-    border: 'rgba(167,139,250,0.15)',
-    status: 'Coming Soon',
-  },
-  {
-    emoji: '🏫',
-    name: 'EduCore',
-    tagline: 'School Management',
-    desc: 'Complete school management system. Student enrollment, fee collection, exam results, attendance, and parent communication.',
-    features: ['Student enrollment', 'Fee collection', 'Exam results', 'Attendance tracking', 'Parent portal'],
-    color: '#00FF88',
-    bg: 'rgba(0,255,136,0.06)',
-    border: 'rgba(0,255,136,0.15)',
-    status: 'Coming Soon',
-  },
-  {
-    emoji: '🏥',
-    name: 'MediTrack',
-    tagline: 'Clinic Management',
-    desc: 'Patient records, appointment scheduling, prescription management, and billing for clinics, chemists, and dental offices.',
-    features: ['Patient records', 'Appointments', 'Prescriptions', 'Billing & invoicing', 'Lab results'],
-    color: '#FB923C',
-    bg: 'rgba(251,146,60,0.06)',
-    border: 'rgba(251,146,60,0.15)',
-    status: 'Coming Soon',
-  },
-  {
-    emoji: '🤝',
-    name: 'SaccoSmart',
-    tagline: 'SACCO & Chama',
-    desc: 'Built for Kenyan SACCOs and chamas. Member contributions, loan management, interest calculation, and M-Pesa integration.',
-    features: ['Member contributions', 'Loan management', 'Interest calculation', 'M-Pesa deposits', 'Member statements'],
-    color: '#FACC15',
-    bg: 'rgba(250,204,21,0.06)',
-    border: 'rgba(250,204,21,0.15)',
-    status: 'Coming Soon',
+    name: 'Enterprise', monthlyKES: null, oneTimeKES: null,
+    desc: 'Full platform access for large organizations',
+    features: ['All 6 Products', 'Unlimited users', 'M-Pesa + bank integration', 'Dedicated support line', 'Custom features', 'Staff training', 'SLA guarantee', 'On-site setup'],
+    highlight: false, accentColor: 'var(--accent3)',
   },
 ];
 
-export default function Products() {
-  return (
-    <section id="products" style={{ padding: '120px 5%', position: 'relative' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+export default function Pricing() {
+  const [isMonthly, setIsMonthly] = useState(true);
 
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 80 }}>
-          <div className="pill" style={{ marginBottom: 20, display: 'inline-flex' }}>
-            Our Products
-          </div>
-          <h2 style={{ fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 20 }}>
-            One platform.{' '}
-            <span style={{ background: 'linear-gradient(90deg, #0066FF, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              Every business.
+  return (
+    <section id="pricing" style={{ padding: '120px 5%', background: 'var(--surface2)', position: 'relative' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <div className="pill" style={{ marginBottom: 20, display: 'inline-flex' }}>Simple Pricing</div>
+          <h2 style={{ fontSize: 'clamp(30px, 4vw, 50px)', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 14 }}>
+            Priced for{' '}
+            <span style={{ background: 'linear-gradient(90deg, var(--accent3), var(--accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              Kenyan businesses
             </span>
           </h2>
-          <p style={{ color: '#6B7A99', fontSize: 18, maxWidth: 520, margin: '0 auto' }}>
-            Software products built specifically for Kenyan businesses. Each product is independent but powered by the same Dantechdevs platform.
-          </p>
+          <p style={{ color: 'var(--text2)', fontSize: 17, marginBottom: 36 }}>Pay monthly or once. No hidden fees. Cancel anytime.</p>
+          <div className="section-divider" style={{ margin: '0 auto 36px' }} />
+
+          {/* Toggle */}
+          <div style={{
+            display: 'inline-flex', background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: 100, padding: 4, gap: 4,
+          }}>
+            {['Monthly', 'One-Time'].map((t, i) => (
+              <button key={t} onClick={() => setIsMonthly(i === 0)} style={{
+                padding: '8px 24px', borderRadius: 100, border: 'none', cursor: 'pointer',
+                fontSize: 14, fontFamily: 'Syne, sans-serif', fontWeight: 600,
+                background: (i === 0) === isMonthly ? 'linear-gradient(135deg, var(--accent2), var(--accent))' : 'transparent',
+                color: (i === 0) === isMonthly ? 'white' : 'var(--muted)',
+                transition: 'all 0.3s',
+              }}>{t}</button>
+            ))}
+          </div>
         </div>
 
-        {/* Products Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 24 }}>
-          {products.map((p, i) => (
-            <div key={i} className="grad-border" style={{ padding: 32, transition: 'transform 0.3s', cursor: 'default' }}
-              onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-4px)')}
-              onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: 24, alignItems: 'start' }}>
+          {plans.map((plan, i) => (
+            <div key={i} style={{
+              background: plan.highlight ? 'var(--surface)' : 'var(--card-bg)',
+              border: `1px solid ${plan.highlight ? 'var(--accent)' : 'var(--border)'}`,
+              borderRadius: 20, padding: 36,
+              transform: plan.highlight ? 'scale(1.03)' : 'none',
+              position: 'relative', overflow: 'hidden',
+              boxShadow: plan.highlight ? '0 0 0 1px var(--accent), 0 20px 60px var(--shadow)' : 'none',
+              transition: 'box-shadow 0.3s',
+            }}>
 
-              {/* Top */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+              {plan.highlight && (
                 <div style={{
-                  width: 56, height: 56, borderRadius: 14,
-                  background: p.bg, border: `1px solid ${p.border}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26,
+                  position: 'absolute', top: 16, right: 16,
+                  background: 'linear-gradient(135deg, var(--accent2), var(--accent))',
+                  borderRadius: 100, padding: '4px 12px',
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  fontSize: 11, color: 'white', fontWeight: 700, fontFamily: 'Syne, sans-serif',
                 }}>
-                  {p.emoji}
+                  <Zap size={10} /> POPULAR
                 </div>
-                <span style={{
-                  fontSize: 11, fontWeight: 600, letterSpacing: '0.06em',
-                  padding: '4px 12px', borderRadius: 100,
-                  background: p.status === 'Available Now' ? 'rgba(0,255,136,0.1)' : 'rgba(107,122,153,0.1)',
-                  color: p.status === 'Available Now' ? '#00FF88' : '#6B7A99',
-                  border: `1px solid ${p.status === 'Available Now' ? 'rgba(0,255,136,0.3)' : 'rgba(107,122,153,0.2)'}`,
-                  textTransform: 'uppercase',
-                }}>
-                  {p.status}
-                </span>
+              )}
+
+              <h3 style={{ fontSize: 20, fontWeight: 800, color: plan.accentColor, marginBottom: 8 }}>{plan.name}</h3>
+              <p style={{ color: 'var(--text2)', fontSize: 13, marginBottom: 28, lineHeight: 1.6 }}>{plan.desc}</p>
+
+              <div style={{ marginBottom: 32 }}>
+                {plan.monthlyKES ? (
+                  <>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                      <span style={{ fontSize: 13, color: 'var(--muted)', fontFamily: 'Syne, sans-serif' }}>KES</span>
+                      <span style={{ fontSize: 42, fontWeight: 800, fontFamily: 'Syne, sans-serif', color: 'var(--text)' }}>
+                        {isMonthly ? plan.monthlyKES?.toLocaleString() : plan.oneTimeKES?.toLocaleString()}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 4 }}>
+                      {isMonthly ? 'per month' : 'one-time license'}
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ fontSize: 32, fontWeight: 800, fontFamily: 'Syne, sans-serif', color: 'var(--text)' }}>Custom</div>
+                )}
               </div>
 
-              <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4, color: p.color }}>{p.name}</h3>
-              <div style={{ fontSize: 13, color: '#6B7A99', marginBottom: 14, letterSpacing: '0.03em' }}>{p.tagline}</div>
-              <p style={{ fontSize: 14, color: '#6B7A99', lineHeight: 1.7, marginBottom: 24 }}>{p.desc}</p>
-
-              {/* Features */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 28 }}>
-                {p.features.map((f, j) => (
-                  <div key={j} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <CheckCircle size={14} color={p.color} />
-                    <span style={{ fontSize: 13, color: '#A0AEC0' }}>{f}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
+                {plan.features.map((f, j) => (
+                  <div key={j} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{
+                      width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
+                      background: plan.highlight ? 'rgba(26,86,219,0.12)' : 'rgba(71,85,105,0.1)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <Check size={10} color={plan.highlight ? 'var(--accent)' : 'var(--muted)'} />
+                    </div>
+                    <span style={{ fontSize: 13, color: 'var(--text2)' }}>{f}</span>
                   </div>
                 ))}
               </div>
 
               <a href="#contact" style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                color: p.color, textDecoration: 'none', fontSize: 13, fontWeight: 600,
-                fontFamily: 'Syne, sans-serif', transition: 'gap 0.2s',
+                display: 'block', textAlign: 'center', textDecoration: 'none',
+                padding: '13px 24px', borderRadius: 10, fontSize: 14,
+                fontFamily: 'Syne, sans-serif', fontWeight: 700,
+                background: plan.highlight ? 'linear-gradient(135deg, var(--accent2), var(--accent))' : 'transparent',
+                color: plan.highlight ? 'white' : 'var(--text)',
+                border: plan.highlight ? 'none' : '1px solid var(--border)',
+                transition: 'all 0.3s',
               }}
-                onMouseEnter={e => (e.currentTarget.style.gap = '10px')}
-                onMouseLeave={e => (e.currentTarget.style.gap = '6px')}>
-                {p.status === 'Available Now' ? 'Get Started' : 'Join Waitlist'}
-                <ArrowRight size={14} />
+                onMouseEnter={e => { if (!plan.highlight) { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; } }}
+                onMouseLeave={e => { if (!plan.highlight) { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text)'; } }}>
+                {plan.monthlyKES ? 'Get Started' : 'Contact Us'}
               </a>
             </div>
           ))}
         </div>
+
+        <p style={{ textAlign: 'center', color: 'var(--muted)', fontSize: 13, marginTop: 48 }}>
+          All plans include M-Pesa integration · Prices in Kenyan Shillings (KES) · VAT applicable
+        </p>
       </div>
     </section>
   );
