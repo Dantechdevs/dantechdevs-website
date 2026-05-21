@@ -9,9 +9,9 @@ const stats = [
 ];
 
 const floatingCards = [
-  { icon: '💆', label: 'BeautyPro', sub: 'Available Now', top: '22%', right: '6%', delay: '0s' },
-  { icon: '🛒', label: 'ShopFlow', sub: 'Coming Soon', top: '55%', right: '2%', delay: '1.5s' },
-  { icon: '⛪', label: 'ChurchDesk', sub: 'Coming Soon', top: '75%', left: '4%', delay: '0.8s' },
+  { icon: '💆', label: 'BeautyPro', sub: 'Available Now', top: '22%', right: '6%', left: undefined, delay: '0s' },
+  { icon: '🛒', label: 'ShopFlow', sub: 'Coming Soon', top: '55%', right: '2%', left: undefined, delay: '1.5s' },
+  { icon: '⛪', label: 'ChurchDesk', sub: 'Coming Soon', top: '75%', right: undefined, left: '4%', delay: '0.8s' },
 ];
 
 export default function Hero() {
@@ -20,14 +20,14 @@ export default function Hero() {
 
       {/* Background orbs */}
       <div style={{
-        position: 'absolute', top: '10%', left: '18%',
-        width: 520, height: 520, borderRadius: '50%',
+        position: 'absolute', top: '10%', left: '15%',
+        width: 560, height: 560, borderRadius: '50%',
         background: 'radial-gradient(circle, var(--orb1) 0%, transparent 70%)',
-        filter: 'blur(50px)', pointerEvents: 'none',
+        filter: 'blur(60px)', pointerEvents: 'none',
       }} className="animate-pulse-glow" />
       <div style={{
-        position: 'absolute', bottom: '8%', right: '8%',
-        width: 380, height: 380, borderRadius: '50%',
+        position: 'absolute', bottom: '5%', right: '5%',
+        width: 400, height: 400, borderRadius: '50%',
         background: 'radial-gradient(circle, var(--orb2) 0%, transparent 70%)',
         filter: 'blur(50px)', pointerEvents: 'none',
       }} className="animate-pulse-glow delay-300" />
@@ -41,19 +41,18 @@ export default function Hero() {
           border: '1px solid var(--border)',
           borderRadius: 14, padding: '12px 18px',
           display: 'flex', alignItems: 'center', gap: 10,
-          backdropFilter: 'blur(10px)',
-          animationDelay: card.delay,
-          zIndex: 5, boxShadow: '0 8px 32px var(--shadow)',
+          animationDelay: card.delay, zIndex: 5,
+          boxShadow: '0 8px 32px var(--shadow)',
         }} className="animate-float">
           <span style={{ fontSize: 22 }}>{card.icon}</span>
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, fontFamily: 'Syne, sans-serif', color: 'var(--text)' }}>{card.label}</div>
-            <div style={{ fontSize: 11, color: card.sub === 'Available Now' ? 'var(--accent3)' : 'var(--muted)' }}>{card.sub}</div>
+            <div style={{ fontSize: 11, color: card.sub === 'Available Now' ? '#22C55E' : 'var(--muted)' }}>{card.sub}</div>
           </div>
           <div style={{
             width: 8, height: 8, borderRadius: '50%', marginLeft: 4,
-            background: card.sub === 'Available Now' ? 'var(--accent3)' : 'var(--muted)',
-            boxShadow: card.sub === 'Available Now' ? '0 0 8px var(--accent3)' : 'none',
+            background: card.sub === 'Available Now' ? '#22C55E' : 'var(--muted)',
+            boxShadow: card.sub === 'Available Now' ? '0 0 8px #22C55E' : 'none',
           }} />
         </div>
       ))}
@@ -76,7 +75,7 @@ export default function Hero() {
             <span style={{ color: 'var(--text)' }}>Software that</span>
             <br />
             <span style={{
-              background: 'linear-gradient(90deg, var(--accent2), var(--accent), var(--accent3))',
+              background: 'linear-gradient(90deg, var(--accent2), var(--accent))',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             }} className="text-glow">
               works for Kenya.
@@ -137,13 +136,13 @@ export default function Hero() {
               </div>
             ))}
           </div>
-
         </div>
       </div>
 
       <style>{`
-        @media (max-width: 600px) {
-          .animate-float { display: none; }
+        @media (max-width: 600px) { .animate-float { display: none; } }
+        @media (max-width: 500px) {
+          div[style*="repeat(4, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
         }
       `}</style>
     </section>

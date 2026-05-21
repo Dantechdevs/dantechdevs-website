@@ -4,55 +4,53 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===================== */
-/* OFFICIAL BRAND COLORS */
-/* ===================== */
-/* Primary:   #1A56DB (Royal Blue)  */
-/* Secondary: #0E9F6E (Emerald)     */
-/* Accent:    #F59E0B (Amber/Gold)  */
-/* ===================== */
+/* ========================= */
+/* DANTECHDEVS BRAND COLORS  */
+/* Navy Blue + Orange/Gold   */
+/* "Code the future"         */
+/* ========================= */
 
 /* DARK MODE (default) */
 :root,
 [data-theme="dark"] {
-  --bg: #060D1A;
-  --surface: #0C1528;
-  --surface2: #111E35;
-  --border: #1C2E4A;
-  --accent: #1A56DB;
-  --accent2: #1E429F;
-  --accent3: #0E9F6E;
-  --gold: #F59E0B;
+  --bg: #07111F;
+  --surface: #0C1A2E;
+  --surface2: #102238;
+  --border: #1A3050;
+  --accent: #F59E0B;
+  --accent2: #D97706;
+  --navy: #1E3A5F;
+  --navy2: #162C47;
   --text: #F1F5F9;
   --text2: #94A3B8;
-  --muted: #475569;
-  --card-bg: #0C1528;
-  --nav-bg: rgba(6, 13, 26, 0.95);
-  --shadow: rgba(0, 0, 0, 0.4);
-  --grid-line: rgba(26, 86, 219, 0.04);
-  --orb1: rgba(26, 86, 219, 0.12);
-  --orb2: rgba(14, 159, 110, 0.08);
+  --muted: #4E6480;
+  --card-bg: #0C1A2E;
+  --nav-bg: rgba(7, 17, 31, 0.96);
+  --shadow: rgba(0, 0, 0, 0.45);
+  --grid-line: rgba(245, 158, 11, 0.03);
+  --orb1: rgba(30, 58, 95, 0.5);
+  --orb2: rgba(245, 158, 11, 0.07);
 }
 
 /* LIGHT MODE */
 [data-theme="light"] {
-  --bg: #F8FAFF;
+  --bg: #F0F4FA;
   --surface: #FFFFFF;
-  --surface2: #EFF4FF;
-  --border: #CBD5E1;
-  --accent: #1A56DB;
-  --accent2: #1E429F;
-  --accent3: #0E9F6E;
-  --gold: #D97706;
-  --text: #0F172A;
-  --text2: #334155;
-  --muted: #64748B;
+  --surface2: #E8EFF8;
+  --border: #C5D3E8;
+  --accent: #D97706;
+  --accent2: #B45309;
+  --navy: #1E3A5F;
+  --navy2: #162C47;
+  --text: #0A1628;
+  --text2: #2D4A6B;
+  --muted: #5A7A9B;
   --card-bg: #FFFFFF;
-  --nav-bg: rgba(248, 250, 255, 0.95);
-  --shadow: rgba(15, 23, 42, 0.08);
-  --grid-line: rgba(26, 86, 219, 0.04);
-  --orb1: rgba(26, 86, 219, 0.06);
-  --orb2: rgba(14, 159, 110, 0.05);
+  --nav-bg: rgba(240, 244, 250, 0.96);
+  --shadow: rgba(10, 22, 40, 0.1);
+  --grid-line: rgba(30, 58, 95, 0.04);
+  --orb1: rgba(30, 58, 95, 0.08);
+  --orb2: rgba(245, 158, 11, 0.06);
 }
 
 /* ===================== */
@@ -96,18 +94,18 @@ h5 {
 }
 
 /* ===================== */
-/* GLOW & SHADOW         */
+/* GLOW & EFFECTS        */
 /* ===================== */
-.glow-blue {
-  box-shadow: 0 0 40px rgba(26, 86, 219, 0.2);
+.glow-gold {
+  box-shadow: 0 0 40px rgba(245, 158, 11, 0.2);
 }
 
-.glow-green {
-  box-shadow: 0 0 40px rgba(14, 159, 110, 0.15);
+.glow-navy {
+  box-shadow: 0 0 40px rgba(30, 58, 95, 0.3);
 }
 
 .text-glow {
-  text-shadow: 0 0 40px rgba(26, 86, 219, 0.35);
+  text-shadow: 0 0 40px rgba(245, 158, 11, 0.3);
 }
 
 /* ===================== */
@@ -126,14 +124,14 @@ h5 {
   position: absolute;
   inset: -1px;
   border-radius: 17px;
-  background: linear-gradient(135deg, var(--accent), var(--accent3), var(--gold));
+  background: linear-gradient(135deg, var(--accent), var(--navy), var(--accent2));
   z-index: -1;
   opacity: 0;
   transition: opacity 0.3s;
 }
 
 .grad-border:hover::before {
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .grad-border:hover {
@@ -147,8 +145,8 @@ h5 {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(26, 86, 219, 0.08);
-  border: 1px solid rgba(26, 86, 219, 0.2);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
   border-radius: 100px;
   padding: 6px 16px;
   font-size: 13px;
@@ -159,8 +157,19 @@ h5 {
 }
 
 [data-theme="light"] .pill {
-  background: rgba(26, 86, 219, 0.06);
-  border-color: rgba(26, 86, 219, 0.25);
+  background: rgba(217, 119, 6, 0.07);
+  border-color: rgba(217, 119, 6, 0.3);
+}
+
+/* ===================== */
+/* SECTION DIVIDER       */
+/* ===================== */
+.section-divider {
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--navy));
+  border-radius: 2px;
+  margin: 16px auto 0;
 }
 
 /* ===================== */
@@ -222,16 +231,6 @@ h5 {
   }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -200% center;
-  }
-
-  100% {
-    background-position: 200% center;
-  }
-}
-
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
@@ -284,7 +283,7 @@ h5 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: var(--navy);
   border-radius: 3px;
 }
 
@@ -306,14 +305,12 @@ h5 {
   font-size: 15px;
   cursor: pointer;
   transition: all 0.3s;
-  position: relative;
-  overflow: hidden;
   letter-spacing: 0.01em;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(26, 86, 219, 0.45);
+  box-shadow: 0 8px 28px rgba(245, 158, 11, 0.4);
 }
 
 .btn-primary:active {
@@ -337,11 +334,11 @@ h5 {
   border-color: var(--accent);
   color: var(--accent);
   transform: translateY(-2px);
-  background: rgba(26, 86, 219, 0.05);
+  background: rgba(245, 158, 11, 0.05);
 }
 
 /* ===================== */
-/* THEME TOGGLE BUTTON   */
+/* THEME TOGGLE          */
 /* ===================== */
 .theme-toggle {
   width: 40px;
@@ -361,7 +358,7 @@ h5 {
 .theme-toggle:hover {
   border-color: var(--accent);
   color: var(--accent);
-  background: rgba(26, 86, 219, 0.08);
+  background: rgba(245, 158, 11, 0.08);
 }
 
 /* ===================== */
@@ -384,39 +381,5 @@ input:focus,
 textarea:focus {
   border-color: var(--accent) !important;
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1) !important;
-}
-
-/* ===================== */
-/* SECTION DIVIDER       */
-/* ===================== */
-.section-divider {
-  width: 60px;
-  height: 4px;
-  background: linear-gradient(90deg, var(--accent), var(--accent3));
-  border-radius: 2px;
-  margin: 16px auto 0;
-}
-
-/* ===================== */
-/* STAT CARDS            */
-/* ===================== */
-.stat-card {
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-
-.stat-card:first-child {
-  border-left: 1px solid var(--border);
-  border-radius: 12px 0 0 12px;
-}
-
-.stat-card:last-child {
-  border-right: 1px solid var(--border);
-  border-radius: 0 12px 12px 0;
-}
-
-[data-theme="light"] .stat-card {
-  box-shadow: 0 2px 12px var(--shadow);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12) !important;
 }

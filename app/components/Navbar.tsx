@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Menu, X, Code2, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Menu, X, ChevronDown, Sun, Moon } from 'lucide-react';
+import Image from 'next/image';
 
 const products = [
   { name: 'BeautyPro', desc: 'Spa & Salon Management' },
@@ -17,7 +18,6 @@ export default function Navbar() {
   const [dropOpen, setDropOpen] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
-  /* Persist theme */
   useEffect(() => {
     const saved = (localStorage.getItem('dtd-theme') as 'dark' | 'light') || 'dark';
     setTheme(saved);
@@ -49,20 +49,20 @@ export default function Navbar() {
       <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
 
         {/* Logo */}
-        <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{
-            width: 38, height: 38, borderRadius: 10,
-            background: 'linear-gradient(135deg, var(--accent2), var(--accent))',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Code2 size={20} color="white" />
-          </div>
+        <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+          <Image
+            src="/logo.png"
+            alt="Dantechdevs Logo"
+            width={44}
+            height={44}
+            style={{ borderRadius: '50%', objectFit: 'cover' }}
+          />
           <div>
             <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 16, color: 'var(--text)', lineHeight: 1 }}>
               Dantechdevs
             </div>
-            <div style={{ fontSize: 10, color: 'var(--muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-              IT & Consultancy
+            <div style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: 2 }}>
+              Code the future
             </div>
           </div>
         </a>
@@ -75,7 +75,7 @@ export default function Navbar() {
               padding: '8px 16px', borderRadius: 8, fontSize: 14,
               transition: 'color 0.2s, background 0.2s', fontWeight: 500,
             }}
-              onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'rgba(26,86,219,0.06)'; }}
+              onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; }}
               onMouseLeave={e => { e.currentTarget.style.color = 'var(--text2)'; e.currentTarget.style.background = 'transparent'; }}>
               {item}
             </a>
@@ -89,7 +89,8 @@ export default function Navbar() {
               display: 'flex', alignItems: 'center', gap: 4,
               color: 'var(--text2)', background: 'none', border: 'none',
               padding: '8px 16px', borderRadius: 8, fontSize: 14,
-              cursor: 'pointer', transition: 'color 0.2s', fontFamily: 'DM Sans, sans-serif', fontWeight: 500,
+              cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500,
+              transition: 'color 0.2s',
             }}
               onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
               onMouseLeave={e => (e.currentTarget.style.color = 'var(--text2)')}>
@@ -127,7 +128,7 @@ export default function Navbar() {
           </a>
         </div>
 
-        {/* Mobile: theme + hamburger */}
+        {/* Mobile */}
         <div style={{ display: 'none', alignItems: 'center', gap: 8 }} className="mobile-btns">
           <button onClick={toggleTheme} className="theme-toggle">
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
@@ -159,8 +160,8 @@ export default function Navbar() {
 
       <style>{`
         @media (max-width: 768px) {
-          .desktop-nav  { display: none !important; }
-          .mobile-btns  { display: flex !important; }
+          .desktop-nav { display: none !important; }
+          .mobile-btns { display: flex !important; }
         }
       `}</style>
     </nav>
