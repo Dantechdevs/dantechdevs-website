@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, ChevronDown, Sun, Moon } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const products = [
   { name: 'BeautyPro', desc: 'Spa & Salon Management' },
@@ -49,7 +50,7 @@ export default function Navbar() {
       <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
 
         {/* Logo */}
-        <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
           <Image
             src="/logo.png"
             alt="Dantechdevs Logo"
@@ -65,12 +66,14 @@ export default function Navbar() {
               Code the future
             </div>
           </div>
-        </a>
+        </Link>
 
         {/* Desktop Nav */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }} className="desktop-nav">
-          {['About', 'Pricing', 'Contact'].map(item => (
-            <a key={item} href={`#${item.toLowerCase()}`} style={{
+
+          {/* About & Pricing — anchor links on homepage */}
+          {['About', 'Pricing'].map(item => (
+            <a key={item} href={`/#${item.toLowerCase()}`} style={{
               color: 'var(--text2)', textDecoration: 'none',
               padding: '8px 16px', borderRadius: 8, fontSize: 14,
               transition: 'color 0.2s, background 0.2s', fontWeight: 500,
@@ -80,6 +83,17 @@ export default function Navbar() {
               {item}
             </a>
           ))}
+
+          {/* Contact — standalone page */}
+          <Link href="/contact" style={{
+            color: 'var(--text2)', textDecoration: 'none',
+            padding: '8px 16px', borderRadius: 8, fontSize: 14,
+            transition: 'color 0.2s, background 0.2s', fontWeight: 500,
+          }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text2)'; e.currentTarget.style.background = 'transparent'; }}>
+            Contact
+          </Link>
 
           {/* Products Dropdown */}
           <div style={{ position: 'relative' }}
@@ -104,7 +118,7 @@ export default function Navbar() {
                 boxShadow: '0 20px 60px var(--shadow)',
               }}>
                 {products.map(p => (
-                  <a key={p.name} href="#products" style={{
+                  <a key={p.name} href="/#products" style={{
                     display: 'block', padding: '10px 14px', borderRadius: 10,
                     textDecoration: 'none', transition: 'background 0.2s',
                   }}
@@ -123,12 +137,13 @@ export default function Navbar() {
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
           </button>
 
-          <a href="#contact" className="btn-primary" style={{ marginLeft: 8, padding: '10px 24px', fontSize: 14, borderRadius: 10, textDecoration: 'none', display: 'inline-block' }}>
+          {/* Get Started → /contact */}
+          <Link href="/contact" className="btn-primary" style={{ marginLeft: 8, padding: '10px 24px', fontSize: 14, borderRadius: 10, textDecoration: 'none', display: 'inline-block' }}>
             Get Started
-          </a>
+          </Link>
         </div>
 
-        {/* Mobile */}
+        {/* Mobile toggle buttons */}
         <div style={{ display: 'none', alignItems: 'center', gap: 8 }} className="mobile-btns">
           <button onClick={toggleTheme} className="theme-toggle">
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
@@ -145,16 +160,25 @@ export default function Navbar() {
           background: 'var(--surface)', borderTop: '1px solid var(--border)',
           padding: '20px 5%', display: 'flex', flexDirection: 'column', gap: 4,
         }}>
-          {['About', 'Products', 'Pricing', 'Contact'].map(item => (
-            <a key={item} href={`#${item.toLowerCase()}`}
-              onClick={() => setOpen(false)}
-              style={{ color: 'var(--text)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid var(--border)', fontSize: 15 }}>
-              {item}
-            </a>
-          ))}
-          <a href="#contact" className="btn-primary" style={{ marginTop: 16, textAlign: 'center', textDecoration: 'none', display: 'block' }}>
-            Get Started
+          <a href="/#about" onClick={() => setOpen(false)}
+            style={{ color: 'var(--text)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid var(--border)', fontSize: 15 }}>
+            About
           </a>
+          <a href="/#products" onClick={() => setOpen(false)}
+            style={{ color: 'var(--text)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid var(--border)', fontSize: 15 }}>
+            Products
+          </a>
+          <a href="/#pricing" onClick={() => setOpen(false)}
+            style={{ color: 'var(--text)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid var(--border)', fontSize: 15 }}>
+            Pricing
+          </a>
+          <Link href="/contact" onClick={() => setOpen(false)}
+            style={{ color: 'var(--text)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid var(--border)', fontSize: 15 }}>
+            Contact
+          </Link>
+          <Link href="/contact" className="btn-primary" style={{ marginTop: 16, textAlign: 'center', textDecoration: 'none', display: 'block' }}>
+            Get Started
+          </Link>
         </div>
       )}
 
