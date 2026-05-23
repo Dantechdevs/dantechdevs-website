@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
-/* ── Types ── */
 interface NavItem {
   label: string;
   href: string;
@@ -32,75 +32,79 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/dashboard" },
 ];
 
-/* ── Navbar Component ── */
+const RED = "#e8325a";
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropOpen, setDropOpen] = useState<string | null>(null);
   const dropRef = useRef<HTMLDivElement>(null);
 
-  /* Scroll shadow */
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* Close dropdown on outside click */
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (dropRef.current && !dropRef.current.contains(e.target as Node)) {
+      if (dropRef.current && !dropRef.current.contains(e.target as Node))
         setDropOpen(null);
-      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   return (
-    <header
-      className={`navbar${scrolled ? " navbar--scrolled" : ""}`}
-      role="banner"
-    >
-      <div className="navbar__inner container">
+    <header className={`dn-nav${scrolled ? " dn-nav--scrolled" : ""}`} role="banner">
+      <div className="dn-nav__inner">
+
         {/* ── Logo ── */}
-        <Link href="/" className="navbar__logo" aria-label="Tijarah home">
-          <span className="navbar__logo-icon">T</span>
-          <span className="navbar__logo-text">
-            Ti<span>jar</span>ah
-          </span>
+        <Link href="/" className="dn-nav__logo" aria-label="Dantechdevs home">
+          <Image
+            src="/logo.png"
+            alt="Dantechdevs logo"
+            width={140}
+            height={40}
+            priority
+            style={{ objectFit: "contain", height: "40px", width: "auto" }}
+          />
         </Link>
 
         {/* ── Desktop Nav ── */}
-        <nav className="navbar__nav" aria-label="Primary navigation" ref={dropRef}>
+        <nav className="dn-nav__links" aria-label="Primary navigation" ref={dropRef}>
           {NAV_ITEMS.map((item) => (
             <div
               key={item.label}
-              className="navbar__item"
+              className="dn-nav__item"
               onMouseEnter={() => item.children && setDropOpen(item.label)}
               onMouseLeave={() => setDropOpen(null)}
             >
               <Link
                 href={item.href}
-                className="navbar__link"
+                className="dn-nav__link"
                 aria-haspopup={!!item.children}
                 aria-expanded={dropOpen === item.label}
               >
                 {item.label}
                 {item.children && (
-                  <ChevronIcon
-                    className={`navbar__chevron${dropOpen === item.label ? " navbar__chevron--open" : ""}`}
-                  />
+                  <svg
+                    className={`dn-chevron${dropOpen === item.label ? " dn-chevron--open" : ""}`}
+                    viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                  >
+                    <path d="M4 6l4 4 4-4" />
+                  </svg>
                 )}
               </Link>
 
               {item.children && dropOpen === item.label && (
-                <div className="navbar__dropdown" role="menu">
+                <div className="dn-dropdown" role="menu">
                   {item.children.map((child) => (
                     <Link
                       key={child.label}
                       href={child.href}
-                      className="navbar__dropdown-item"
+                      className="dn-dropdown__item"
                       role="menuitem"
                     >
                       {child.label}
@@ -112,31 +116,28 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* ── Desktop Actions ── */}
-        <div className="navbar__actions">
-          <button className="navbar__icon-btn" aria-label="Search">
+        {/* ── Actions ── */}
+        <div className="dn-nav__actions">
+          <button className="dn-icon-btn" aria-label="Search">
             <SearchIcon />
           </button>
-
-          <button className="navbar__icon-btn navbar__icon-btn--badge" aria-label="Wishlist (0)">
+          <button className="dn-icon-btn dn-icon-btn--badge" aria-label="Wishlist">
             <HeartIcon />
-            <span className="navbar__badge">0</span>
+            <span className="dn-badge">0</span>
           </button>
-
-          <button className="navbar__icon-btn" aria-label="Account">
+          <button className="dn-icon-btn" aria-label="Account">
             <UserIcon />
           </button>
-
-          <button className="navbar__icon-btn navbar__icon-btn--badge" aria-label="Cart (0)">
+          <button className="dn-icon-btn dn-icon-btn--badge" aria-label="Cart">
             <CartIcon />
-            <span className="navbar__badge">0</span>
+            <span className="dn-badge">0</span>
           </button>
         </div>
 
-        {/* ── Mobile Burger ── */}
+        {/* ── Burger ── */}
         <button
-          className={`navbar__burger${mobileOpen ? " navbar__burger--open" : ""}`}
-          aria-label="Toggle mobile menu"
+          className={`dn-burger${mobileOpen ? " dn-burger--open" : ""}`}
+          aria-label="Toggle menu"
           aria-expanded={mobileOpen}
           onClick={() => setMobileOpen((v) => !v)}
         >
@@ -146,23 +147,23 @@ export default function Navbar() {
 
       {/* ── Mobile Menu ── */}
       {mobileOpen && (
-        <div className="navbar__mobile" role="dialog" aria-label="Mobile navigation">
+        <div className="dn-mobile" role="dialog" aria-label="Mobile navigation">
           {NAV_ITEMS.map((item) => (
             <div key={item.label}>
               <Link
                 href={item.href}
-                className="navbar__mobile-link"
+                className="dn-mobile__link"
                 onClick={() => setMobileOpen(false)}
               >
                 {item.label}
               </Link>
               {item.children && (
-                <div className="navbar__mobile-sub">
+                <div className="dn-mobile__sub">
                   {item.children.map((child) => (
                     <Link
                       key={child.label}
                       href={child.href}
-                      className="navbar__mobile-sublink"
+                      className="dn-mobile__sublink"
                       onClick={() => setMobileOpen(false)}
                     >
                       {child.label}
@@ -172,307 +173,226 @@ export default function Navbar() {
               )}
             </div>
           ))}
-
-          <div className="navbar__mobile-actions">
-            <button className="navbar__icon-btn" aria-label="Search"><SearchIcon /></button>
-            <button className="navbar__icon-btn" aria-label="Wishlist"><HeartIcon /></button>
-            <button className="navbar__icon-btn" aria-label="Account"><UserIcon /></button>
-            <button className="navbar__icon-btn" aria-label="Cart"><CartIcon /></button>
+          <div className="dn-mobile__actions">
+            <button className="dn-icon-btn" aria-label="Search"><SearchIcon /></button>
+            <button className="dn-icon-btn" aria-label="Wishlist"><HeartIcon /></button>
+            <button className="dn-icon-btn" aria-label="Account"><UserIcon /></button>
+            <button className="dn-icon-btn" aria-label="Cart"><CartIcon /></button>
           </div>
         </div>
       )}
 
-      {/* ── Scoped Styles ── */}
       <style>{`
-        /* Base */
-        .navbar {
+        /* ── Base ── */
+        .dn-nav {
           position: sticky;
           top: 0;
           z-index: 1000;
-          background: rgba(255,255,255,0.92);
+          background: rgba(255,255,255,0.96);
           backdrop-filter: blur(14px);
           -webkit-backdrop-filter: blur(14px);
           border-bottom: 1px solid transparent;
           transition: box-shadow 0.25s ease, border-color 0.25s ease;
         }
-        .navbar--scrolled {
-          box-shadow: 0 4px 20px rgba(124,92,252,0.10);
-          border-bottom-color: #F0EEF8;
+        .dn-nav--scrolled {
+          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+          border-bottom-color: #eee;
         }
-        .navbar__inner {
+        .dn-nav__inner {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 24px;
           display: flex;
           align-items: center;
-          height: 72px;
+          height: 68px;
           gap: 12px;
         }
 
-        /* Logo */
-        .navbar__logo {
+        /* ── Logo ── */
+        .dn-nav__logo {
           display: flex;
           align-items: center;
-          gap: 8px;
-          text-decoration: none;
           flex-shrink: 0;
-        }
-        .navbar__logo-icon {
-          width: 36px;
-          height: 36px;
-          background: #E8294C;
-          color: #fff;
-          border-radius: 10px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-family: 'Syne', sans-serif;
-          font-weight: 800;
-          font-size: 1.125rem;
-          box-shadow: 0 4px 12px rgba(232,41,76,0.3);
-        }
-        .navbar__logo-text {
-          font-family: 'Syne', sans-serif;
-          font-weight: 800;
-          font-size: 1.375rem;
-          color: #1A1530;
-          letter-spacing: -0.02em;
-        }
-        .navbar__logo-text span {
-          color: #E8294C;
+          text-decoration: none;
         }
 
-        /* Nav */
-        .navbar__nav {
+        /* ── Desktop nav ── */
+        .dn-nav__links {
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 2px;
           margin-left: auto;
         }
-        .navbar__item {
-          position: relative;
-        }
-        .navbar__link {
+        .dn-nav__item { position: relative; }
+        .dn-nav__link {
           display: flex;
           align-items: center;
           gap: 4px;
           padding: 8px 14px;
           border-radius: 8px;
-          font-family: 'DM Sans', sans-serif;
           font-size: 0.9375rem;
           font-weight: 500;
-          color: #5B5478;
+          color: #444;
           text-decoration: none;
-          transition: color 0.2s ease, background 0.2s ease;
           white-space: nowrap;
+          transition: color 0.2s, background 0.2s;
         }
-        .navbar__link:hover,
-        .navbar__item:hover > .navbar__link {
-          color: #E8294C;
-          background: rgba(232,41,76,0.05);
+        .dn-nav__link:hover,
+        .dn-nav__item:hover > .dn-nav__link {
+          color: ${RED};
+          background: rgba(232,50,90,0.05);
         }
-        .navbar__chevron {
-          width: 14px;
-          height: 14px;
-          opacity: 0.6;
-          transition: transform 0.2s ease;
+        .dn-chevron {
+          width: 14px; height: 14px;
+          opacity: 0.5;
+          transition: transform 0.2s;
         }
-        .navbar__chevron--open {
+        .dn-chevron--open {
           transform: rotate(180deg);
           opacity: 1;
         }
 
-        /* Dropdown */
-        .navbar__dropdown {
+        /* ── Dropdown ── */
+        .dn-dropdown {
           position: absolute;
           top: calc(100% + 8px);
           left: 50%;
           transform: translateX(-50%);
           min-width: 200px;
           background: #fff;
-          border: 1px solid #F0EEF8;
+          border: 1px solid #eee;
           border-radius: 14px;
           padding: 8px;
-          box-shadow: 0 16px 40px rgba(26,21,48,0.12);
-          animation: fadeUp 0.18s ease both;
+          box-shadow: 0 16px 40px rgba(0,0,0,0.10);
           z-index: 100;
+          animation: dnFadeUp 0.18s ease both;
         }
-        @keyframes fadeUp {
+        @keyframes dnFadeUp {
           from { opacity:0; transform: translateX(-50%) translateY(8px); }
           to   { opacity:1; transform: translateX(-50%) translateY(0);   }
         }
-        .navbar__dropdown-item {
+        .dn-dropdown__item {
           display: block;
           padding: 9px 14px;
           border-radius: 8px;
-          font-family: 'DM Sans', sans-serif;
           font-size: 0.875rem;
           font-weight: 500;
-          color: #5B5478;
+          color: #555;
           text-decoration: none;
-          transition: color 0.15s ease, background 0.15s ease;
+          transition: color 0.15s, background 0.15s;
         }
-        .navbar__dropdown-item:hover {
-          color: #E8294C;
-          background: rgba(232,41,76,0.06);
+        .dn-dropdown__item:hover {
+          color: ${RED};
+          background: rgba(232,50,90,0.06);
         }
 
-        /* Actions */
-        .navbar__actions {
+        /* ── Actions ── */
+        .dn-nav__actions {
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 2px;
           margin-left: 12px;
         }
-        .navbar__icon-btn {
+        .dn-icon-btn {
           position: relative;
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          width: 40px; height: 40px;
+          display: flex; align-items: center; justify-content: center;
           border-radius: 10px;
-          border: none;
-          background: transparent;
-          color: #5B5478;
-          cursor: pointer;
-          transition: color 0.2s ease, background 0.2s ease;
+          border: none; background: transparent;
+          color: #555; cursor: pointer;
+          transition: color 0.2s, background 0.2s;
         }
-        .navbar__icon-btn:hover {
-          color: #E8294C;
-          background: rgba(232,41,76,0.06);
+        .dn-icon-btn:hover {
+          color: ${RED};
+          background: rgba(232,50,90,0.06);
         }
-        .navbar__icon-btn svg {
-          width: 20px;
-          height: 20px;
-        }
-        .navbar__icon-btn--badge .navbar__badge {
+        .dn-icon-btn svg { width: 20px; height: 20px; }
+        .dn-icon-btn--badge .dn-badge {
           position: absolute;
-          top: 4px;
-          right: 4px;
-          min-width: 16px;
-          height: 16px;
+          top: 4px; right: 4px;
+          min-width: 16px; height: 16px;
           padding: 0 4px;
-          background: #E8294C;
-          color: #fff;
+          background: ${RED}; color: #fff;
           border-radius: 999px;
-          font-size: 0.625rem;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          line-height: 1;
+          font-size: 0.625rem; font-weight: 700;
+          display: flex; align-items: center; justify-content: center;
         }
 
-        /* Burger */
-        .navbar__burger {
+        /* ── Burger ── */
+        .dn-burger {
           display: none;
           flex-direction: column;
           justify-content: space-between;
-          width: 32px;
-          height: 22px;
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          padding: 0;
-          margin-left: auto;
+          width: 28px; height: 20px;
+          background: transparent; border: none;
+          cursor: pointer; padding: 0; margin-left: auto;
         }
-        .navbar__burger span {
-          display: block;
-          width: 100%;
-          height: 2.5px;
-          background: #1A1530;
-          border-radius: 2px;
+        .dn-burger span {
+          display: block; width: 100%; height: 2px;
+          background: #333; border-radius: 2px;
           transition: all 0.25s ease;
         }
-        .navbar__burger--open span:nth-child(1) {
-          transform: translateY(9.75px) rotate(45deg);
-        }
-        .navbar__burger--open span:nth-child(2) {
-          opacity: 0;
-          transform: scaleX(0);
-        }
-        .navbar__burger--open span:nth-child(3) {
-          transform: translateY(-9.75px) rotate(-45deg);
-        }
+        .dn-burger--open span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+        .dn-burger--open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .dn-burger--open span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
 
-        /* Mobile menu */
-        .navbar__mobile {
+        /* ── Mobile menu ── */
+        .dn-mobile {
           background: #fff;
-          border-top: 1px solid #F0EEF8;
-          padding: 16px 20px 24px;
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-          animation: fadeIn 0.2s ease both;
+          border-top: 1px solid #eee;
+          padding: 12px 20px 20px;
+          display: flex; flex-direction: column; gap: 2px;
+          animation: dnFadeIn 0.2s ease both;
         }
-        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-        .navbar__mobile-link {
-          display: block;
-          padding: 11px 14px;
+        @keyframes dnFadeIn { from { opacity:0; } to { opacity:1; } }
+        .dn-mobile__link {
+          display: block; padding: 11px 14px;
           border-radius: 10px;
-          font-family: 'DM Sans', sans-serif;
-          font-weight: 600;
-          font-size: 1rem;
-          color: #1A1530;
-          text-decoration: none;
-          transition: background 0.15s ease, color 0.15s ease;
+          font-weight: 600; font-size: 1rem;
+          color: #222; text-decoration: none;
+          transition: background 0.15s, color 0.15s;
         }
-        .navbar__mobile-link:hover { background: rgba(232,41,76,0.05); color: #E8294C; }
-        .navbar__mobile-sub {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 4px;
+        .dn-mobile__link:hover { background: rgba(232,50,90,0.05); color: ${RED}; }
+        .dn-mobile__sub {
+          display: flex; flex-wrap: wrap; gap: 4px;
           padding: 4px 14px 8px;
         }
-        .navbar__mobile-sublink {
-          padding: 6px 12px;
-          border-radius: 8px;
-          background: #F8F7FF;
-          font-size: 0.8125rem;
-          font-weight: 500;
-          color: #5B5478;
+        .dn-mobile__sublink {
+          padding: 6px 12px; border-radius: 8px;
+          background: #f8f8f8; font-size: 0.8125rem;
+          font-weight: 500; color: #555;
           text-decoration: none;
-          transition: background 0.15s ease, color 0.15s ease;
+          transition: background 0.15s, color 0.15s;
         }
-        .navbar__mobile-sublink:hover { background: rgba(232,41,76,0.08); color: #E8294C; }
-        .navbar__mobile-actions {
-          display: flex;
-          gap: 4px;
-          margin-top: 8px;
-          padding-top: 16px;
-          border-top: 1px solid #F0EEF8;
+        .dn-mobile__sublink:hover { background: rgba(232,50,90,0.08); color: ${RED}; }
+        .dn-mobile__actions {
+          display: flex; gap: 4px;
+          margin-top: 8px; padding-top: 14px;
+          border-top: 1px solid #eee;
         }
 
-        /* Responsive */
+        /* ── Responsive ── */
         @media (max-width: 1024px) {
-          .navbar__nav { display: none; }
-          .navbar__actions { display: none; }
-          .navbar__burger { display: flex; }
+          .dn-nav__links  { display: none; }
+          .dn-nav__actions { display: none; }
+          .dn-burger { display: flex; }
         }
         @media (min-width: 1025px) {
-          .navbar__mobile { display: none; }
+          .dn-mobile { display: none; }
         }
       `}</style>
     </header>
   );
 }
 
-/* ── Icon Components ── */
-function ChevronIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 6l4 4 4-4" />
-    </svg>
-  );
-}
-
+/* ── Icons ── */
 function SearchIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="7" />
-      <path d="M21 21l-4.35-4.35" />
+      <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.35-4.35" />
     </svg>
   );
 }
-
 function HeartIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -480,21 +400,17 @@ function HeartIcon() {
     </svg>
   );
 }
-
 function UserIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
     </svg>
   );
 }
-
 function CartIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="9" cy="21" r="1" />
-      <circle cx="20" cy="21" r="1" />
+      <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
       <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
     </svg>
   );

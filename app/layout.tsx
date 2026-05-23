@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dantechdevs — Code The Future",
-  description: "The best digital software marketplace for Kenya. M-Pesa integrated, locally supported, and priced for the Kenyan market.",
+  title: "Dantechdevs",
+  description: "Code The Future",
 };
 
 export default function RootLayout({
