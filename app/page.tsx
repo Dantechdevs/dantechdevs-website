@@ -104,14 +104,9 @@ const featuredProducts: Product[] = [
   },
 ];
 
-const navLinks = ["Home", "All Products", "About Us", "Contact Us", "Dashboard"];
-
 /* ── Page ── */
 export default function HomePage() {
   const [search, setSearch] = useState("");
-  const [activeNav, setActiveNav] = useState("Home");
-  const [cartCount] = useState(0);
-  const [wishlistCount] = useState(0);
 
   const visibleProducts = search.trim()
     ? featuredProducts.filter((p) =>
@@ -123,77 +118,12 @@ export default function HomePage() {
   return (
     <main style={{ minHeight: "100vh", background: "#fff", fontFamily: "'Segoe UI', sans-serif", color: "#111" }}>
 
-      {/* ── NAVBAR ── */}
-      <nav style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "0 40px", height: "64px", borderBottom: "1px solid #eee",
-        position: "sticky", top: 0, background: "#fff", zIndex: 100,
-        boxShadow: "0 1px 8px rgba(0,0,0,0.06)",
-      }}>
-        {/* ✅ CHANGED: Logo now shows Dantechdevs branding */}
-        <div style={{ display: "flex", flexDirection: "column", cursor: "pointer" }}>
-          <span style={{ fontWeight: 800, fontSize: "20px", color: "#e8325a", lineHeight: 1 }}>
-            Dantechdevs
-          </span>
-          <span style={{ fontSize: "9px", letterSpacing: "2px", color: "#888", textTransform: "uppercase", marginTop: "2px" }}>
-            Code The Future
-          </span>
-        </div>
-
-        {/* Nav Links */}
-        <div style={{ display: "flex", gap: "28px" }}>
-          {navLinks.map((link) => (
-            <button
-              key={link}
-              onClick={() => setActiveNav(link)}
-              style={{
-                background: "none", border: "none", cursor: "pointer",
-                fontSize: "15px", fontWeight: activeNav === link ? 600 : 400,
-                color: activeNav === link ? "#e8325a" : "#444",
-                borderBottom: activeNav === link ? "2px solid #e8325a" : "2px solid transparent",
-                paddingBottom: "2px", transition: "all 0.2s",
-              }}
-            >
-              {link}
-              {link === "All Products" && <span style={{ marginLeft: "4px", fontSize: "11px" }}>▾</span>}
-            </button>
-          ))}
-        </div>
-
-        {/* Icons */}
-        <div style={{ display: "flex", alignItems: "center", gap: "18px" }}>
-          <span style={{ cursor: "pointer", fontSize: "20px" }}>🔍</span>
-          <span style={{ cursor: "pointer", fontSize: "20px", position: "relative" }}>
-            ♡
-            <span style={{
-              position: "absolute", top: "-6px", right: "-8px",
-              background: "#e8325a", color: "#fff", fontSize: "10px",
-              borderRadius: "50%", width: "16px", height: "16px",
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>{wishlistCount}</span>
-          </span>
-          <span style={{ cursor: "pointer", fontSize: "20px" }}>👤</span>
-          <span style={{ cursor: "pointer", fontSize: "20px", position: "relative" }}>
-            🛒
-            {cartCount > 0 && (
-              <span style={{
-                position: "absolute", top: "-6px", right: "-8px",
-                background: "#e8325a", color: "#fff", fontSize: "10px",
-                borderRadius: "50%", width: "16px", height: "16px",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>{cartCount}</span>
-            )}
-          </span>
-        </div>
-      </nav>
-
       {/* ── HERO ── */}
       <section style={{
         position: "relative",
         background: "linear-gradient(rgba(0,0,0,0.62), rgba(0,0,0,0.62)), url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1400&q=80') center/cover no-repeat",
         padding: "110px 24px 100px", textAlign: "center", color: "#fff",
       }}>
-        {/* ✅ CHANGED: Headline now says Dantechdevs content */}
         <h1 style={{
           fontSize: "clamp(2.2rem, 5vw, 3.6rem)", fontWeight: 800,
           lineHeight: 1.15, margin: "0 auto 18px", maxWidth: "800px",
@@ -201,7 +131,6 @@ export default function HomePage() {
           The Best Digital Software<br />Marketplace for Kenya
         </h1>
 
-        {/* ✅ CHANGED: Subtext now matches Dantechdevs brand */}
         <p style={{ color: "#e8325a", fontSize: "17px", marginBottom: "36px", fontWeight: 500 }}>
           M-Pesa integrated, locally supported, and priced for the Kenyan market
         </p>
@@ -229,7 +158,7 @@ export default function HomePage() {
           }}>🔍</button>
         </div>
 
-        {/* Quick pills — ✅ CHANGED to Dantechdevs product types */}
+        {/* Quick pills */}
         <div style={{ display: "flex", justifyContent: "center", gap: "30px", flexWrap: "wrap" }}>
           {[
             { icon: "📄", label: "PDF Books" },
@@ -308,13 +237,6 @@ export default function HomePage() {
           </div>
         )}
       </section>
-
-      <style>{`
-                @media (max-width: 768px) {
-                    nav { padding: 0 16px; }
-                    nav > div:nth-child(2) { display: none; }
-                }
-            `}</style>
     </main>
   );
 }
