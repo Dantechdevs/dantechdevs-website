@@ -1,193 +1,501 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { Menu, X, ChevronDown, Sun, Moon } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
+"use client";
 
-const products = [
-  { name: 'BeautyPro', desc: 'Spa & Salon Management' },
-  { name: 'ShopFlow', desc: 'Retail & Inventory' },
-  { name: 'ChurchDesk', desc: 'Church Management' },
-  { name: 'EduCore', desc: 'School Management' },
-  { name: 'MediTrack', desc: 'Clinic Management' },
-  { name: 'SaccoSmart', desc: 'SACCO & Chama' },
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+
+/* ── Types ── */
+interface NavItem {
+  label: string;
+  href: string;
+  children?: { label: string; href: string }[];
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { label: "Home", href: "/" },
+  {
+    label: "All Products",
+    href: "/products",
+    children: [
+      { label: "PDF Books", href: "/products/pdf-books" },
+      { label: "Software", href: "/products/software" },
+      { label: "WordPress Items", href: "/products/wordpress" },
+      { label: "Fonts", href: "/products/fonts" },
+      { label: "Photos", href: "/products/photos" },
+      { label: "Graphic", href: "/products/graphic" },
+      { label: "Audios", href: "/products/audios" },
+      { label: "Code", href: "/products/code" },
+      { label: "Videos", href: "/products/videos" },
+    ],
+  },
+  { label: "About Us", href: "/about" },
+  { label: "Contact Us", href: "/contact" },
+  { label: "Dashboard", href: "/dashboard" },
 ];
 
+/* ── Navbar Component ── */
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [dropOpen, setDropOpen] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [dropOpen, setDropOpen] = useState<string | null>(null);
+  const dropRef = useRef<HTMLDivElement>(null);
 
+  /* Scroll shadow */
   useEffect(() => {
-    const saved = (localStorage.getItem('dtd-theme') as 'dark' | 'light') || 'dark';
-    setTheme(saved);
-    document.documentElement.setAttribute('data-theme', saved);
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const toggleTheme = () => {
-    const next = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('dtd-theme', next);
-  };
-
+  /* Close dropdown on outside click */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+    const handler = (e: MouseEvent) => {
+      if (dropRef.current && !dropRef.current.contains(e.target as Node)) {
+        setDropOpen(null);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   return (
-    <nav style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-      background: scrolled ? 'var(--nav-bg)' : 'transparent',
-      backdropFilter: scrolled ? 'blur(20px)' : 'none',
-      borderBottom: scrolled ? '1px solid var(--border)' : 'none',
-      transition: 'all 0.3s ease',
-      padding: '0 5%',
-    }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
-
-        {/* Logo */}
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
-          <Image
-            src="/logo.png"
-            alt="Dantechdevs Logo"
-            width={44}
-            height={44}
-            style={{ borderRadius: '50%', objectFit: 'cover' }}
-          />
-          <div>
-            <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 16, color: 'var(--text)', lineHeight: 1 }}>
-              Dantechdevs
-            </div>
-            <div style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: 2 }}>
-              Code the future
-            </div>
-          </div>
+    <header
+      className={`navbar${scrolled ? " navbar--scrolled" : ""}`}
+      role="banner"
+    >
+      <div className="navbar__inner container">
+        {/* ── Logo ── */}
+        <Link href="/" className="navbar__logo" aria-label="Tijarah home">
+          <span className="navbar__logo-icon">T</span>
+          <span className="navbar__logo-text">
+            Ti<span>jar</span>ah
+          </span>
         </Link>
 
-        {/* Desktop Nav */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }} className="desktop-nav">
+        {/* ── Desktop Nav ── */}
+        <nav className="navbar__nav" aria-label="Primary navigation" ref={dropRef}>
+          {NAV_ITEMS.map((item) => (
+            <div
+              key={item.label}
+              className="navbar__item"
+              onMouseEnter={() => item.children && setDropOpen(item.label)}
+              onMouseLeave={() => setDropOpen(null)}
+            >
+              <Link
+                href={item.href}
+                className="navbar__link"
+                aria-haspopup={!!item.children}
+                aria-expanded={dropOpen === item.label}
+              >
+                {item.label}
+                {item.children && (
+                  <ChevronIcon
+                    className={`navbar__chevron${dropOpen === item.label ? " navbar__chevron--open" : ""}`}
+                  />
+                )}
+              </Link>
 
-          {/* About & Pricing — anchor links on homepage */}
-          {['About', 'Pricing'].map(item => (
-            <a key={item} href={`/#${item.toLowerCase()}`} style={{
-              color: 'var(--text2)', textDecoration: 'none',
-              padding: '8px 16px', borderRadius: 8, fontSize: 14,
-              transition: 'color 0.2s, background 0.2s', fontWeight: 500,
-            }}
-              onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'var(--text2)'; e.currentTarget.style.background = 'transparent'; }}>
-              {item}
-            </a>
+              {item.children && dropOpen === item.label && (
+                <div className="navbar__dropdown" role="menu">
+                  {item.children.map((child) => (
+                    <Link
+                      key={child.label}
+                      href={child.href}
+                      className="navbar__dropdown-item"
+                      role="menuitem"
+                    >
+                      {child.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
+        </nav>
 
-          {/* Contact — standalone page */}
-          <Link href="/contact" style={{
-            color: 'var(--text2)', textDecoration: 'none',
-            padding: '8px 16px', borderRadius: 8, fontSize: 14,
-            transition: 'color 0.2s, background 0.2s', fontWeight: 500,
-          }}
-            onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text2)'; e.currentTarget.style.background = 'transparent'; }}>
-            Contact
-          </Link>
-
-          {/* Products Dropdown */}
-          <div style={{ position: 'relative' }}
-            onMouseEnter={() => setDropOpen(true)}
-            onMouseLeave={() => setDropOpen(false)}>
-            <button style={{
-              display: 'flex', alignItems: 'center', gap: 4,
-              color: 'var(--text2)', background: 'none', border: 'none',
-              padding: '8px 16px', borderRadius: 8, fontSize: 14,
-              cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500,
-              transition: 'color 0.2s',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'var(--text2)')}>
-              Products <ChevronDown size={14} />
-            </button>
-            {dropOpen && (
-              <div style={{
-                position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',
-                background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16,
-                padding: 12, minWidth: 240, marginTop: 8,
-                boxShadow: '0 20px 60px var(--shadow)',
-              }}>
-                {products.map(p => (
-                  <a key={p.name} href="/#products" style={{
-                    display: 'block', padding: '10px 14px', borderRadius: 10,
-                    textDecoration: 'none', transition: 'background 0.2s',
-                  }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', fontFamily: 'Syne, sans-serif' }}>{p.name}</div>
-                    <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{p.desc}</div>
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Theme Toggle */}
-          <button onClick={toggleTheme} className="theme-toggle" title="Toggle theme" style={{ marginLeft: 4 }}>
-            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+        {/* ── Desktop Actions ── */}
+        <div className="navbar__actions">
+          <button className="navbar__icon-btn" aria-label="Search">
+            <SearchIcon />
           </button>
 
-          {/* Get Started → /contact */}
-          <Link href="/contact" className="btn-primary" style={{ marginLeft: 8, padding: '10px 24px', fontSize: 14, borderRadius: 10, textDecoration: 'none', display: 'inline-block' }}>
-            Get Started
-          </Link>
-        </div>
-
-        {/* Mobile toggle buttons */}
-        <div style={{ display: 'none', alignItems: 'center', gap: 8 }} className="mobile-btns">
-          <button onClick={toggleTheme} className="theme-toggle">
-            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          <button className="navbar__icon-btn navbar__icon-btn--badge" aria-label="Wishlist (0)">
+            <HeartIcon />
+            <span className="navbar__badge">0</span>
           </button>
-          <button onClick={() => setOpen(!open)} style={{ background: 'none', border: 'none', color: 'var(--text)', cursor: 'pointer' }}>
-            {open ? <X size={24} /> : <Menu size={24} />}
+
+          <button className="navbar__icon-btn" aria-label="Account">
+            <UserIcon />
+          </button>
+
+          <button className="navbar__icon-btn navbar__icon-btn--badge" aria-label="Cart (0)">
+            <CartIcon />
+            <span className="navbar__badge">0</span>
           </button>
         </div>
+
+        {/* ── Mobile Burger ── */}
+        <button
+          className={`navbar__burger${mobileOpen ? " navbar__burger--open" : ""}`}
+          aria-label="Toggle mobile menu"
+          aria-expanded={mobileOpen}
+          onClick={() => setMobileOpen((v) => !v)}
+        >
+          <span /><span /><span />
+        </button>
       </div>
 
-      {/* Mobile Menu */}
-      {open && (
-        <div style={{
-          background: 'var(--surface)', borderTop: '1px solid var(--border)',
-          padding: '20px 5%', display: 'flex', flexDirection: 'column', gap: 4,
-        }}>
-          <a href="/#about" onClick={() => setOpen(false)}
-            style={{ color: 'var(--text)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid var(--border)', fontSize: 15 }}>
-            About
-          </a>
-          <a href="/#products" onClick={() => setOpen(false)}
-            style={{ color: 'var(--text)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid var(--border)', fontSize: 15 }}>
-            Products
-          </a>
-          <a href="/#pricing" onClick={() => setOpen(false)}
-            style={{ color: 'var(--text)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid var(--border)', fontSize: 15 }}>
-            Pricing
-          </a>
-          <Link href="/contact" onClick={() => setOpen(false)}
-            style={{ color: 'var(--text)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid var(--border)', fontSize: 15 }}>
-            Contact
-          </Link>
-          <Link href="/contact" className="btn-primary" style={{ marginTop: 16, textAlign: 'center', textDecoration: 'none', display: 'block' }}>
-            Get Started
-          </Link>
+      {/* ── Mobile Menu ── */}
+      {mobileOpen && (
+        <div className="navbar__mobile" role="dialog" aria-label="Mobile navigation">
+          {NAV_ITEMS.map((item) => (
+            <div key={item.label}>
+              <Link
+                href={item.href}
+                className="navbar__mobile-link"
+                onClick={() => setMobileOpen(false)}
+              >
+                {item.label}
+              </Link>
+              {item.children && (
+                <div className="navbar__mobile-sub">
+                  {item.children.map((child) => (
+                    <Link
+                      key={child.label}
+                      href={child.href}
+                      className="navbar__mobile-sublink"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {child.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+
+          <div className="navbar__mobile-actions">
+            <button className="navbar__icon-btn" aria-label="Search"><SearchIcon /></button>
+            <button className="navbar__icon-btn" aria-label="Wishlist"><HeartIcon /></button>
+            <button className="navbar__icon-btn" aria-label="Account"><UserIcon /></button>
+            <button className="navbar__icon-btn" aria-label="Cart"><CartIcon /></button>
+          </div>
         </div>
       )}
 
+      {/* ── Scoped Styles ── */}
       <style>{`
-        @media (max-width: 768px) {
-          .desktop-nav { display: none !important; }
-          .mobile-btns { display: flex !important; }
+        /* Base */
+        .navbar {
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+          background: rgba(255,255,255,0.92);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          border-bottom: 1px solid transparent;
+          transition: box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+        .navbar--scrolled {
+          box-shadow: 0 4px 20px rgba(124,92,252,0.10);
+          border-bottom-color: #F0EEF8;
+        }
+        .navbar__inner {
+          display: flex;
+          align-items: center;
+          height: 72px;
+          gap: 12px;
+        }
+
+        /* Logo */
+        .navbar__logo {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          text-decoration: none;
+          flex-shrink: 0;
+        }
+        .navbar__logo-icon {
+          width: 36px;
+          height: 36px;
+          background: #E8294C;
+          color: #fff;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: 'Syne', sans-serif;
+          font-weight: 800;
+          font-size: 1.125rem;
+          box-shadow: 0 4px 12px rgba(232,41,76,0.3);
+        }
+        .navbar__logo-text {
+          font-family: 'Syne', sans-serif;
+          font-weight: 800;
+          font-size: 1.375rem;
+          color: #1A1530;
+          letter-spacing: -0.02em;
+        }
+        .navbar__logo-text span {
+          color: #E8294C;
+        }
+
+        /* Nav */
+        .navbar__nav {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          margin-left: auto;
+        }
+        .navbar__item {
+          position: relative;
+        }
+        .navbar__link {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 8px 14px;
+          border-radius: 8px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.9375rem;
+          font-weight: 500;
+          color: #5B5478;
+          text-decoration: none;
+          transition: color 0.2s ease, background 0.2s ease;
+          white-space: nowrap;
+        }
+        .navbar__link:hover,
+        .navbar__item:hover > .navbar__link {
+          color: #E8294C;
+          background: rgba(232,41,76,0.05);
+        }
+        .navbar__chevron {
+          width: 14px;
+          height: 14px;
+          opacity: 0.6;
+          transition: transform 0.2s ease;
+        }
+        .navbar__chevron--open {
+          transform: rotate(180deg);
+          opacity: 1;
+        }
+
+        /* Dropdown */
+        .navbar__dropdown {
+          position: absolute;
+          top: calc(100% + 8px);
+          left: 50%;
+          transform: translateX(-50%);
+          min-width: 200px;
+          background: #fff;
+          border: 1px solid #F0EEF8;
+          border-radius: 14px;
+          padding: 8px;
+          box-shadow: 0 16px 40px rgba(26,21,48,0.12);
+          animation: fadeUp 0.18s ease both;
+          z-index: 100;
+        }
+        @keyframes fadeUp {
+          from { opacity:0; transform: translateX(-50%) translateY(8px); }
+          to   { opacity:1; transform: translateX(-50%) translateY(0);   }
+        }
+        .navbar__dropdown-item {
+          display: block;
+          padding: 9px 14px;
+          border-radius: 8px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #5B5478;
+          text-decoration: none;
+          transition: color 0.15s ease, background 0.15s ease;
+        }
+        .navbar__dropdown-item:hover {
+          color: #E8294C;
+          background: rgba(232,41,76,0.06);
+        }
+
+        /* Actions */
+        .navbar__actions {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          margin-left: 12px;
+        }
+        .navbar__icon-btn {
+          position: relative;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 10px;
+          border: none;
+          background: transparent;
+          color: #5B5478;
+          cursor: pointer;
+          transition: color 0.2s ease, background 0.2s ease;
+        }
+        .navbar__icon-btn:hover {
+          color: #E8294C;
+          background: rgba(232,41,76,0.06);
+        }
+        .navbar__icon-btn svg {
+          width: 20px;
+          height: 20px;
+        }
+        .navbar__icon-btn--badge .navbar__badge {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          min-width: 16px;
+          height: 16px;
+          padding: 0 4px;
+          background: #E8294C;
+          color: #fff;
+          border-radius: 999px;
+          font-size: 0.625rem;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          line-height: 1;
+        }
+
+        /* Burger */
+        .navbar__burger {
+          display: none;
+          flex-direction: column;
+          justify-content: space-between;
+          width: 32px;
+          height: 22px;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+          margin-left: auto;
+        }
+        .navbar__burger span {
+          display: block;
+          width: 100%;
+          height: 2.5px;
+          background: #1A1530;
+          border-radius: 2px;
+          transition: all 0.25s ease;
+        }
+        .navbar__burger--open span:nth-child(1) {
+          transform: translateY(9.75px) rotate(45deg);
+        }
+        .navbar__burger--open span:nth-child(2) {
+          opacity: 0;
+          transform: scaleX(0);
+        }
+        .navbar__burger--open span:nth-child(3) {
+          transform: translateY(-9.75px) rotate(-45deg);
+        }
+
+        /* Mobile menu */
+        .navbar__mobile {
+          background: #fff;
+          border-top: 1px solid #F0EEF8;
+          padding: 16px 20px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          animation: fadeIn 0.2s ease both;
+        }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        .navbar__mobile-link {
+          display: block;
+          padding: 11px 14px;
+          border-radius: 10px;
+          font-family: 'DM Sans', sans-serif;
+          font-weight: 600;
+          font-size: 1rem;
+          color: #1A1530;
+          text-decoration: none;
+          transition: background 0.15s ease, color 0.15s ease;
+        }
+        .navbar__mobile-link:hover { background: rgba(232,41,76,0.05); color: #E8294C; }
+        .navbar__mobile-sub {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+          padding: 4px 14px 8px;
+        }
+        .navbar__mobile-sublink {
+          padding: 6px 12px;
+          border-radius: 8px;
+          background: #F8F7FF;
+          font-size: 0.8125rem;
+          font-weight: 500;
+          color: #5B5478;
+          text-decoration: none;
+          transition: background 0.15s ease, color 0.15s ease;
+        }
+        .navbar__mobile-sublink:hover { background: rgba(232,41,76,0.08); color: #E8294C; }
+        .navbar__mobile-actions {
+          display: flex;
+          gap: 4px;
+          margin-top: 8px;
+          padding-top: 16px;
+          border-top: 1px solid #F0EEF8;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+          .navbar__nav { display: none; }
+          .navbar__actions { display: none; }
+          .navbar__burger { display: flex; }
+        }
+        @media (min-width: 1025px) {
+          .navbar__mobile { display: none; }
         }
       `}</style>
-    </nav>
+    </header>
+  );
+}
+
+/* ── Icon Components ── */
+function ChevronIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 6l4 4 4-4" />
+    </svg>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="7" />
+      <path d="M21 21l-4.35-4.35" />
+    </svg>
+  );
+}
+
+function HeartIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+  );
+}
+
+function UserIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+
+function CartIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="21" r="1" />
+      <circle cx="20" cy="21" r="1" />
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+    </svg>
   );
 }

@@ -1,1500 +1,367 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
-interface Message {
-    role: "user" | "assistant";
-    content: string;
-}
+const RED = "#e8325a";
+
+const stats = [
+    { icon: "🚀", label: "50+ Projects" },
+    { icon: "⚡", label: "Fast Delivery" },
+    { icon: "🕐", label: "24/7 Support" },
+    { icon: "🎨", label: "Modern UI/UX" },
+];
+
+const services = [
+    { icon: "🌐", title: "Web Development", desc: "Modern responsive websites and web apps." },
+    { icon: "📱", title: "Mobile Apps", desc: "Android and iOS applications." },
+    { icon: "🎨", title: "UI/UX Design", desc: "Beautiful interfaces and user experiences." },
+    { icon: "⚙️", title: "Custom Software", desc: "Tailored systems for businesses." },
+];
+
+const faqs = [
+    { q: "How long does a website take?", a: "Most websites take 1–3 weeks depending on complexity." },
+    { q: "Do you build mobile apps?", a: "Yes. We develop Android and cross-platform applications." },
+    { q: "Can you redesign old websites?", a: "Absolutely. We modernize and improve existing websites." },
+];
+
+const socials = [
+    { icon: "🌐", href: "#", label: "Website" },
+    { icon: "💼", href: "#", label: "LinkedIn" },
+    { icon: "💻", href: "#", label: "GitHub" },
+    { icon: "📘", href: "#", label: "Facebook" },
+];
 
 export default function ContactPage() {
-    const [form, setForm] = useState({
-        name: "",
-        contact: "",
-        message: "",
-    });
-
-    const [errors, setErrors] = useState({
-        name: "",
-        contact: "",
-        message: "",
-    });
-
-    const [sending, setSending] = useState(false);
+    const [form, setForm] = useState({ name: "", contact: "", message: "" });
     const [submitted, setSubmitted] = useState(false);
+    const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-    const [chatOpen, setChatOpen] = useState(false);
+    const charCount = form.message.length;
 
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            role: "assistant",
-            content:
-                "Hi 👋 I'm the Dantechdevs AI assistant. Ask me about pricing, websites, mobile apps, timelines, or UI/UX design.",
-        },
-    ]);
-
-    const [userInput, setUserInput] = useState("");
-    const [loading, setLoading] = useState(false);
-
-    const chatEndRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        chatEndRef.current?.scrollIntoView({
-            behavior: "smooth",
-        });
-    }, [messages]);
-
-    useEffect(() => {
-        const handleEsc = (e: KeyboardEvent) => {
-            if (e.key === "Escape") {
-                setChatOpen(false);
-            }
-        };
-
-        window.addEventListener("keydown", handleEsc);
-
-        return () => {
-            window.removeEventListener(
-                "keydown",
-                handleEsc
-            );
-        };
-    }, []);
-
-    const validateForm = () => {
-        const newErrors = {
-            name: "",
-            contact: "",
-            message: "",
-        };
-
-        if (form.name.trim().length < 2) {
-            newErrors.name =
-                "Please enter a valid name";
-        }
-
-        if (
-            !form.contact.includes("@") &&
-            !/^(\+254|0)[17]\d{8}$/.test(
-                form.contact
-            )
-        ) {
-            newErrors.contact =
-                "Enter a valid email or Kenyan phone number";
-        }
-
-        if (form.message.trim().length < 10) {
-            newErrors.message =
-                "Message should be at least 10 characters";
-        }
-
-        setErrors(newErrors);
-
-        return !Object.values(newErrors).some(
-            Boolean
-        );
-    };
-
-    const handleSubmit = async (
-        e: React.FormEvent
-    ) => {
+    const handleSubmit = (e: React.MouseEvent) => {
         e.preventDefault();
-
-        if (!validateForm()) return;
-
-        setSending(true);
-
-        await new Promise((resolve) =>
-            setTimeout(resolve, 1500)
-        );
-
-        setSending(false);
-        setSubmitted(true);
+        if (form.name && form.contact && form.message) {
+            setSubmitted(true);
+        }
     };
-
-    const sendMessage = async () => {
-        if (!userInput.trim() || loading)
-            return;
-
-        const newMessages: Message[] = [
-            ...messages,
-            {
-                role: "user",
-                content: userInput,
-            },
-        ];
-
-        setMessages(newMessages);
-        setUserInput("");
-        setLoading(true);
-
-        setTimeout(() => {
-            setMessages([
-                ...newMessages,
-                {
-                    role: "assistant",
-                    content:
-                        "Thanks for reaching out 👋 Dantechdevs specializes in websites, mobile apps, UI/UX, and custom software solutions.",
-                },
-            ]);
-
-            setLoading(false);
-        }, 1200);
-    };
-
-    const suggestions = [
-        "Website pricing",
-        "Do you build mobile apps?",
-        "How long does a project take?",
-    ];
 
     return (
-        <main
-            style={{
-                minHeight: "100vh",
-                background: "#0d1117",
-                color: "#ffffff",
-                fontFamily: "sans-serif",
-            }}
-        >
-            {/* HERO */}
-            <section
-                style={{
-                    textAlign: "center",
-                    padding: "90px 24px 60px",
-                    borderBottom:
-                        "1px solid #1e2530",
-                    animation:
-                        "fadeUp 0.7s ease",
-                }}
-            >
-                <span
-                    style={{
-                        display: "inline-block",
-                        border:
-                            "1px solid #e8a020",
-                        color: "#e8a020",
-                        borderRadius: "999px",
-                        padding: "8px 18px",
-                        fontSize: "14px",
-                        marginBottom: "26px",
-                    }}
-                >
-                    Available for Projects
-                </span>
+        <main style={{ minHeight: "100vh", background: "#fff", fontFamily: "'Segoe UI', sans-serif", color: "#111" }}>
 
-                <h1
-                    style={{
-                        fontSize:
-                            "clamp(2.5rem, 6vw, 4.5rem)",
-                        fontWeight: 700,
-                        lineHeight: 1.1,
-                        marginBottom: "20px",
-                    }}
-                >
-                    Let&apos;s Build Something{" "}
-                    <span
-                        style={{
-                            color: "#e8a020",
-                        }}
-                    >
-                        Amazing
-                    </span>
+            {/* ── PAGE HEADER ── */}
+            <section style={{
+                background: `linear-gradient(rgba(0,0,0,0.68), rgba(0,0,0,0.68)), url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=80') center/cover no-repeat`,
+                padding: "80px 24px",
+                textAlign: "center",
+                color: "#fff",
+            }}>
+                <p style={{ color: RED, fontWeight: 600, fontSize: "14px", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "12px" }}>
+                    Get In Touch
+                </p>
+                <h1 style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", fontWeight: 800, marginBottom: "14px", lineHeight: 1.15 }}>
+                    Contact <span style={{ color: RED }}>Us</span>
                 </h1>
-
-                <p
-                    style={{
-                        maxWidth: "700px",
-                        margin: "0 auto",
-                        color: "#8b949e",
-                        fontSize: "18px",
-                        lineHeight: 1.7,
-                    }}
-                >
-                    We help businesses and startups
-                    create modern websites, mobile
-                    apps, and scalable software
-                    systems.
+                <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "16px", maxWidth: "480px", margin: "0 auto" }}>
+                    Have a project in mind? We&apos;d love to hear from you.
                 </p>
             </section>
 
-            {/* CONTACT SECTION */}
-            <section
-                className="contact-grid"
-                style={{
-                    maxWidth: "1150px",
-                    margin: "0 auto",
-                    padding: "80px 24px",
-                    display: "grid",
-                    gridTemplateColumns:
-                        "1fr 1fr",
-                    gap: "60px",
-                }}
-            >
-                {/* LEFT SIDE */}
-                <div
-                    style={{
-                        animation:
-                            "fadeUp 0.8s ease",
-                    }}
-                >
-                    <h2
-                        style={{
-                            fontSize: "28px",
-                            marginBottom: "35px",
-                        }}
-                    >
-                        Contact Details
+            {/* ── STATS STRIP ── */}
+            <div style={{
+                display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "0",
+                borderBottom: "1px solid #eee", borderTop: "1px solid #eee",
+                background: "#fafafa",
+            }}>
+                {stats.map((s, i) => (
+                    <div key={s.label} style={{
+                        display: "flex", alignItems: "center", gap: "10px",
+                        padding: "18px 36px",
+                        borderRight: i < stats.length - 1 ? "1px solid #eee" : "none",
+                        fontSize: "15px", fontWeight: 600, color: "#333",
+                    }}>
+                        <span style={{ fontSize: "20px" }}>{s.icon}</span>
+                        {s.label}
+                    </div>
+                ))}
+            </div>
+
+            {/* ── MAIN CONTENT ── */}
+            <div style={{
+                maxWidth: "1100px", margin: "0 auto",
+                padding: "70px 24px", display: "grid",
+                gridTemplateColumns: "1fr 1.4fr", gap: "60px",
+            }}>
+
+                {/* ── LEFT: Contact Details ── */}
+                <div>
+                    <h2 style={{ fontSize: "26px", fontWeight: 800, marginBottom: "8px" }}>
+                        Contact <span style={{ color: RED }}>Details</span>
                     </h2>
+                    <p style={{ color: "#888", fontSize: "14px", marginBottom: "36px" }}>
+                        Reach us through any of the channels below.
+                    </p>
 
+                    {/* Info Cards */}
                     {[
-                        {
-                            icon: "📍",
-                            title: "Location",
-                            value: "Nairobi, Kenya",
-                        },
-                        {
-                            icon: "✉️",
-                            title: "Email",
-                            value: "dantechdevs@gmail.com",
-                        },
-                        {
-                            icon: "📞",
-                            title: "Phone",
-                            value: "+254 712 328 150",
-                        },
+                        { icon: "📍", label: "Location", value: "Nairobi, Kenya", href: null },
+                        { icon: "✉️", label: "Email", value: "dantechdevs@gmail.com", href: "mailto:dantechdevs@gmail.com" },
+                        { icon: "📞", label: "Phone", value: "+254 712 328 150", href: "tel:+254712328150" },
                     ].map((item) => (
-                        <div
-                            key={item.title}
-                            style={{
-                                display: "flex",
-                                gap: "18px",
-                                marginBottom: "28px",
-                            }}
+                        <div key={item.label} style={{
+                            display: "flex", alignItems: "flex-start", gap: "16px",
+                            padding: "20px", borderRadius: "14px", border: "1px solid #eee",
+                            marginBottom: "16px", background: "#fff",
+                            transition: "box-shadow 0.2s",
+                        }}
+                            onMouseOver={(e) => { e.currentTarget.style.boxShadow = `0 6px 24px rgba(232,50,90,0.12)`; e.currentTarget.style.borderColor = RED; }}
+                            onMouseOut={(e) => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = "#eee"; }}
                         >
-                            <div
-                                style={{
-                                    width: "56px",
-                                    height: "56px",
-                                    background:
-                                        "#161b22",
-                                    borderRadius:
-                                        "16px",
-                                    display: "flex",
-                                    alignItems:
-                                        "center",
-                                    justifyContent:
-                                        "center",
-                                    fontSize: "24px",
-                                    border:
-                                        "1px solid #1e2530",
-                                }}
-                            >
-                                {item.icon}
-                            </div>
-
+                            <div style={{
+                                width: "46px", height: "46px", borderRadius: "12px",
+                                background: "rgba(232,50,90,0.08)", display: "flex",
+                                alignItems: "center", justifyContent: "center", fontSize: "22px", flexShrink: 0,
+                            }}>{item.icon}</div>
                             <div>
-                                <p
-                                    style={{
-                                        color:
-                                            "#8b949e",
-                                        fontSize:
-                                            "12px",
-                                        textTransform:
-                                            "uppercase",
-                                        letterSpacing:
-                                            "0.08em",
-                                        marginBottom:
-                                            "6px",
-                                    }}
-                                >
-                                    {item.title}
-                                </p>
-
-                                <p
-                                    style={{
-                                        margin: 0,
-                                        fontSize:
-                                            "18px",
-                                    }}
-                                >
-                                    {item.value}
-                                </p>
+                                <div style={{ fontSize: "12px", color: "#999", fontWeight: 600, textTransform: "uppercase", letterSpacing: "1px", marginBottom: "4px" }}>{item.label}</div>
+                                {item.href ? (
+                                    <a href={item.href} style={{ color: "#111", fontWeight: 600, fontSize: "15px", textDecoration: "none" }}
+                                        onMouseOver={(e) => { (e.target as HTMLAnchorElement).style.color = RED; }}
+                                        onMouseOut={(e) => { (e.target as HTMLAnchorElement).style.color = "#111"; }}
+                                    >{item.value}</a>
+                                ) : (
+                                    <span style={{ color: "#111", fontWeight: 600, fontSize: "15px" }}>{item.value}</span>
+                                )}
                             </div>
                         </div>
                     ))}
 
-                    {/* WHATSAPP */}
-                    <a
-                        href="https://wa.me/254712328150"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                            display:
-                                "inline-flex",
-                            alignItems: "center",
-                            gap: "10px",
-                            background: "#25D366",
-                            color: "#fff",
-                            padding:
-                                "14px 26px",
-                            borderRadius:
-                                "999px",
-                            textDecoration:
-                                "none",
-                            fontWeight: 700,
-                            marginTop: "10px",
-                            transition:
-                                "all 0.3s ease",
-                        }}
+                    {/* WhatsApp Button */}
+                    <a href="https://wa.me/254712328150" target="_blank" rel="noopener noreferrer" style={{
+                        display: "flex", alignItems: "center", justifyContent: "center", gap: "10px",
+                        width: "100%", padding: "14px", borderRadius: "14px",
+                        background: "#25D366", color: "#fff", textDecoration: "none",
+                        fontWeight: 700, fontSize: "15px", marginBottom: "28px",
+                        boxShadow: "0 4px 16px rgba(37,211,102,0.3)",
+                        transition: "transform 0.2s, box-shadow 0.2s",
+                    }}
+                        onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(37,211,102,0.4)"; }}
+                        onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(37,211,102,0.3)"; }}
                     >
-                        💬 Chat on WhatsApp
+                        <span style={{ fontSize: "20px" }}>💬</span>
+                        Chat on WhatsApp
                     </a>
 
-                    {/* SOCIAL ICONS */}
-                    <div
-                        style={{
-                            display: "flex",
-                            gap: "14px",
-                            marginTop: "34px",
-                            flexWrap: "wrap",
-                        }}
-                    >
-                        {[
-                            {
-                                icon: "🌐",
-                                label: "Website",
-                            },
-                            {
-                                icon: "💼",
-                                label: "LinkedIn",
-                            },
-                            {
-                                icon: "💻",
-                                label: "GitHub",
-                            },
-                            {
-                                icon: "📘",
-                                label: "Facebook",
-                            },
-                        ].map((social) => (
-                            <button
-                                key={social.label}
-                                style={{
-                                    width: "52px",
-                                    height: "52px",
-                                    background:
-                                        "#161b22",
-                                    border:
-                                        "1px solid #1e2530",
-                                    borderRadius:
-                                        "14px",
-                                    display: "flex",
-                                    alignItems:
-                                        "center",
-                                    justifyContent:
-                                        "center",
-                                    fontSize:
-                                        "22px",
-                                    cursor:
-                                        "pointer",
-                                    transition:
-                                        "all 0.25s ease",
-                                }}
-                                onMouseOver={(
-                                    e
-                                ) => {
-                                    e.currentTarget.style.transform =
-                                        "translateY(-5px)";
-                                    e.currentTarget.style.border =
-                                        "1px solid #e8a020";
-                                }}
-                                onMouseOut={(
-                                    e
-                                ) => {
-                                    e.currentTarget.style.transform =
-                                        "translateY(0)";
-                                    e.currentTarget.style.border =
-                                        "1px solid #1e2530";
-                                }}
-                            >
-                                {social.icon}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* STATS */}
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns:
-                                "1fr 1fr",
-                            gap: "16px",
-                            marginTop: "45px",
-                        }}
-                    >
-                        {[
-                            "50+ Projects",
-                            "Fast Delivery",
-                            "24/7 Support",
-                            "Modern UI/UX",
-                        ].map((item) => (
-                            <div
-                                key={item}
-                                style={{
-                                    background:
-                                        "#161b22",
-                                    border:
-                                        "1px solid #1e2530",
-                                    borderRadius:
-                                        "16px",
-                                    padding:
-                                        "22px",
-                                    textAlign:
-                                        "center",
-                                }}
-                            >
-                                {item}
-                            </div>
+                    {/* Socials */}
+                    <div style={{ display: "flex", gap: "12px" }}>
+                        {socials.map((s) => (
+                            <a key={s.label} href={s.href} title={s.label} style={{
+                                width: "44px", height: "44px", borderRadius: "12px",
+                                border: "1px solid #eee", display: "flex", alignItems: "center",
+                                justifyContent: "center", fontSize: "20px", textDecoration: "none",
+                                transition: "all 0.2s", background: "#fff",
+                            }}
+                                onMouseOver={(e) => { e.currentTarget.style.borderColor = RED; e.currentTarget.style.background = "rgba(232,50,90,0.06)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                                onMouseOut={(e) => { e.currentTarget.style.borderColor = "#eee"; e.currentTarget.style.background = "#fff"; e.currentTarget.style.transform = "translateY(0)"; }}
+                            >{s.icon}</a>
                         ))}
                     </div>
                 </div>
 
-                {/* RIGHT SIDE */}
-                <div
-                    style={{
-                        background: "#161b22",
-                        border:
-                            "1px solid #1e2530",
-                        borderRadius: "24px",
-                        padding: "40px",
-                        animation:
-                            "fadeUp 1s ease",
-                    }}
-                >
+                {/* ── RIGHT: Contact Form ── */}
+                <div>
+                    <h2 style={{ fontSize: "26px", fontWeight: 800, marginBottom: "8px" }}>
+                        Send Us a <span style={{ color: RED }}>Message</span>
+                    </h2>
+                    <p style={{ color: "#888", fontSize: "14px", marginBottom: "32px" }}>
+                        Fill the form and we&apos;ll get back to you within 24 hours.
+                    </p>
+
                     {submitted ? (
-                        <div
-                            style={{
-                                textAlign:
-                                    "center",
-                                padding:
-                                    "40px 0",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    fontSize:
-                                        "64px",
-                                    marginBottom:
-                                        "20px",
-                                }}
-                            >
-                                ✅
-                            </div>
-
-                            <h2>
-                                Message Sent!
-                            </h2>
-
-                            <p
-                                style={{
-                                    color:
-                                        "#8b949e",
-                                }}
-                            >
-                                We&apos;ll get
-                                back to you
-                                shortly.
+                        <div style={{
+                            textAlign: "center", padding: "60px 30px",
+                            border: "1px solid #eee", borderRadius: "20px",
+                            background: "rgba(232,50,90,0.03)",
+                        }}>
+                            <div style={{ fontSize: "56px", marginBottom: "16px" }}>✅</div>
+                            <h3 style={{ fontSize: "22px", fontWeight: 800, marginBottom: "8px" }}>Message Sent!</h3>
+                            <p style={{ color: "#888", fontSize: "15px", marginBottom: "24px" }}>
+                                Thanks {form.name}! We&apos;ll reach out to you soon.
                             </p>
-
-                            <button
-                                onClick={() => {
-                                    setSubmitted(
-                                        false
-                                    );
-
-                                    setForm({
-                                        name: "",
-                                        contact:
-                                            "",
-                                        message:
-                                            "",
-                                    });
-                                }}
+                            <button onClick={() => { setSubmitted(false); setForm({ name: "", contact: "", message: "" }); }}
                                 style={{
-                                    marginTop:
-                                        "24px",
-                                    background:
-                                        "transparent",
-                                    border:
-                                        "1px solid #e8a020",
-                                    color:
-                                        "#e8a020",
-                                    padding:
-                                        "12px 24px",
-                                    borderRadius:
-                                        "10px",
-                                    cursor:
-                                        "pointer",
-                                }}
-                            >
+                                    background: RED, color: "#fff", border: "none",
+                                    padding: "12px 28px", borderRadius: "999px",
+                                    fontWeight: 700, fontSize: "14px", cursor: "pointer",
+                                }}>
                                 Send Another
                             </button>
                         </div>
                     ) : (
-                        <>
-                            <h2
-                                style={{
-                                    marginBottom:
-                                        "28px",
-                                    fontSize:
-                                        "28px",
-                                }}
-                            >
-                                Send us a
-                                message
-                            </h2>
-
-                            <form
-                                onSubmit={
-                                    handleSubmit
-                                }
-                                style={{
-                                    display:
-                                        "flex",
-                                    flexDirection:
-                                        "column",
-                                    gap: "22px",
-                                }}
-                            >
-                                {/* NAME */}
-                                <div>
-                                    <label
-                                        style={{
-                                            display:
-                                                "block",
-                                            marginBottom:
-                                                "8px",
-                                            color:
-                                                "#8b949e",
-                                            fontSize:
-                                                "13px",
-                                        }}
-                                    >
-                                        Your Name
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        value={
-                                            form.name
-                                        }
-                                        placeholder="John Doe"
-                                        onChange={(
-                                            e
-                                        ) =>
-                                            setForm(
-                                                {
-                                                    ...form,
-                                                    name: e
-                                                        .target
-                                                        .value,
-                                                }
-                                            )
-                                        }
-                                        style={{
-                                            width:
-                                                "100%",
-                                            background:
-                                                "#0d1117",
-                                            border:
-                                                "1px solid #1e2530",
-                                            borderRadius:
-                                                "12px",
-                                            padding:
-                                                "15px 16px",
-                                            color:
-                                                "#fff",
-                                            outline:
-                                                "none",
-                                            boxSizing:
-                                                "border-box",
-                                        }}
-                                    />
-
-                                    {errors.name && (
-                                        <p
-                                            style={{
-                                                color:
-                                                    "#ff6b6b",
-                                                fontSize:
-                                                    "13px",
-                                                marginTop:
-                                                    "8px",
-                                            }}
-                                        >
-                                            {
-                                                errors.name
-                                            }
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* CONTACT */}
-                                <div>
-                                    <label
-                                        style={{
-                                            display:
-                                                "block",
-                                            marginBottom:
-                                                "8px",
-                                            color:
-                                                "#8b949e",
-                                            fontSize:
-                                                "13px",
-                                        }}
-                                    >
-                                        Email or
-                                        Phone
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        value={
-                                            form.contact
-                                        }
-                                        placeholder="you@email.com"
-                                        onChange={(
-                                            e
-                                        ) =>
-                                            setForm(
-                                                {
-                                                    ...form,
-                                                    contact:
-                                                        e
-                                                            .target
-                                                            .value,
-                                                }
-                                            )
-                                        }
-                                        style={{
-                                            width:
-                                                "100%",
-                                            background:
-                                                "#0d1117",
-                                            border:
-                                                "1px solid #1e2530",
-                                            borderRadius:
-                                                "12px",
-                                            padding:
-                                                "15px 16px",
-                                            color:
-                                                "#fff",
-                                            outline:
-                                                "none",
-                                            boxSizing:
-                                                "border-box",
-                                        }}
-                                    />
-
-                                    {errors.contact && (
-                                        <p
-                                            style={{
-                                                color:
-                                                    "#ff6b6b",
-                                                fontSize:
-                                                    "13px",
-                                                marginTop:
-                                                    "8px",
-                                            }}
-                                        >
-                                            {
-                                                errors.contact
-                                            }
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* MESSAGE */}
-                                <div>
-                                    <label
-                                        style={{
-                                            display:
-                                                "block",
-                                            marginBottom:
-                                                "8px",
-                                            color:
-                                                "#8b949e",
-                                            fontSize:
-                                                "13px",
-                                        }}
-                                    >
-                                        Message
-                                    </label>
-
-                                    <textarea
-                                        rows={6}
-                                        maxLength={
-                                            500
-                                        }
-                                        value={
-                                            form.message
-                                        }
-                                        placeholder="Tell us about your project..."
-                                        onChange={(
-                                            e
-                                        ) =>
-                                            setForm(
-                                                {
-                                                    ...form,
-                                                    message:
-                                                        e
-                                                            .target
-                                                            .value,
-                                                }
-                                            )
-                                        }
-                                        style={{
-                                            width:
-                                                "100%",
-                                            background:
-                                                "#0d1117",
-                                            border:
-                                                "1px solid #1e2530",
-                                            borderRadius:
-                                                "12px",
-                                            padding:
-                                                "15px 16px",
-                                            color:
-                                                "#fff",
-                                            outline:
-                                                "none",
-                                            resize:
-                                                "vertical",
-                                            boxSizing:
-                                                "border-box",
-                                            fontFamily:
-                                                "sans-serif",
-                                        }}
-                                    />
-
-                                    <div
-                                        style={{
-                                            display:
-                                                "flex",
-                                            justifyContent:
-                                                "space-between",
-                                            marginTop:
-                                                "8px",
-                                        }}
-                                    >
-                                        {errors.message ? (
-                                            <p
-                                                style={{
-                                                    color:
-                                                        "#ff6b6b",
-                                                    fontSize:
-                                                        "13px",
-                                                }}
-                                            >
-                                                {
-                                                    errors.message
-                                                }
-                                            </p>
-                                        ) : (
-                                            <span />
-                                        )}
-
-                                        <p
-                                            style={{
-                                                color:
-                                                    "#8b949e",
-                                                fontSize:
-                                                    "12px",
-                                            }}
-                                        >
-                                            {
-                                                form
-                                                    .message
-                                                    .length
-                                            }
-                                            /500
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    disabled={
-                                        sending
-                                    }
+                        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                            {/* Name */}
+                            <div>
+                                <label style={{ fontSize: "13px", fontWeight: 600, color: "#555", display: "block", marginBottom: "6px" }}>Your Name</label>
+                                <input
+                                    type="text" placeholder="e.g. Daniel Kamau"
+                                    value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
                                     style={{
-                                        background:
-                                            "#e8a020",
-                                        color:
-                                            "#0d1117",
-                                        border:
-                                            "none",
-                                        borderRadius:
-                                            "12px",
-                                        padding:
-                                            "16px",
-                                        fontSize:
-                                            "16px",
-                                        fontWeight: 700,
-                                        cursor:
-                                            sending
-                                                ? "not-allowed"
-                                                : "pointer",
-                                        opacity:
-                                            sending
-                                                ? 0.7
-                                                : 1,
+                                        width: "100%", padding: "14px 18px", border: "1px solid #e0e0e0",
+                                        borderRadius: "12px", fontSize: "15px", outline: "none",
+                                        fontFamily: "inherit", transition: "border-color 0.2s", boxSizing: "border-box",
                                     }}
-                                >
-                                    {sending
-                                        ? "Sending..."
-                                        : "Send Message"}
-                                </button>
-                            </form>
-                        </>
-                    )}
-                </div>
-            </section>
-
-            {/* SERVICES */}
-            <section
-                style={{
-                    maxWidth: "1150px",
-                    margin: "0 auto",
-                    padding:
-                        "0 24px 100px",
-                }}
-            >
-                <div
-                    style={{
-                        textAlign: "center",
-                        marginBottom: "50px",
-                    }}
-                >
-                    <h2
-                        style={{
-                            fontSize: "38px",
-                            marginBottom: "16px",
-                        }}
-                    >
-                        What We Build
-                    </h2>
-
-                    <p
-                        style={{
-                            color: "#8b949e",
-                            maxWidth: "700px",
-                            margin: "0 auto",
-                            lineHeight: 1.7,
-                        }}
-                    >
-                        Modern digital
-                        solutions designed
-                        for startups,
-                        businesses, and
-                        growing brands.
-                    </p>
-                </div>
-
-                <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns:
-                            "repeat(auto-fit, minmax(250px, 1fr))",
-                        gap: "24px",
-                    }}
-                >
-                    {[
-                        {
-                            icon: "🌐",
-                            title:
-                                "Web Development",
-                            desc: "Modern responsive websites and web apps.",
-                        },
-                        {
-                            icon: "📱",
-                            title:
-                                "Mobile Apps",
-                            desc: "Android and iOS applications.",
-                        },
-                        {
-                            icon: "🎨",
-                            title:
-                                "UI/UX Design",
-                            desc: "Beautiful interfaces and user experiences.",
-                        },
-                        {
-                            icon: "⚙️",
-                            title:
-                                "Custom Software",
-                            desc: "Tailored systems for businesses.",
-                        },
-                    ].map((service) => (
-                        <div
-                            key={
-                                service.title
-                            }
-                            style={{
-                                background:
-                                    "#161b22",
-                                border:
-                                    "1px solid #1e2530",
-                                borderRadius:
-                                    "22px",
-                                padding:
-                                    "30px",
-                                transition:
-                                    "all 0.3s ease",
-                                cursor:
-                                    "pointer",
-                            }}
-                            onMouseOver={(
-                                e
-                            ) => {
-                                e.currentTarget.style.transform =
-                                    "translateY(-8px)";
-                                e.currentTarget.style.border =
-                                    "1px solid #e8a020";
-                            }}
-                            onMouseOut={(
-                                e
-                            ) => {
-                                e.currentTarget.style.transform =
-                                    "translateY(0)";
-                                e.currentTarget.style.border =
-                                    "1px solid #1e2530";
-                            }}
-                        >
-                            <div
-                                style={{
-                                    fontSize:
-                                        "42px",
-                                    marginBottom:
-                                        "18px",
-                                }}
-                            >
-                                {
-                                    service.icon
-                                }
+                                    onFocus={(e) => { e.target.style.borderColor = RED; }}
+                                    onBlur={(e) => { e.target.style.borderColor = "#e0e0e0"; }}
+                                />
                             </div>
 
-                            <h3
-                                style={{
-                                    fontSize:
-                                        "22px",
-                                    marginBottom:
-                                        "14px",
-                                }}
-                            >
-                                {
-                                    service.title
-                                }
-                            </h3>
+                            {/* Email or Phone */}
+                            <div>
+                                <label style={{ fontSize: "13px", fontWeight: 600, color: "#555", display: "block", marginBottom: "6px" }}>Email or Phone</label>
+                                <input
+                                    type="text" placeholder="e.g. you@email.com or +254..."
+                                    value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })}
+                                    style={{
+                                        width: "100%", padding: "14px 18px", border: "1px solid #e0e0e0",
+                                        borderRadius: "12px", fontSize: "15px", outline: "none",
+                                        fontFamily: "inherit", transition: "border-color 0.2s", boxSizing: "border-box",
+                                    }}
+                                    onFocus={(e) => { e.target.style.borderColor = RED; }}
+                                    onBlur={(e) => { e.target.style.borderColor = "#e0e0e0"; }}
+                                />
+                            </div>
 
-                            <p
-                                style={{
-                                    color:
-                                        "#8b949e",
-                                    lineHeight:
-                                        1.7,
-                                }}
+                            {/* Message */}
+                            <div>
+                                <label style={{ fontSize: "13px", fontWeight: 600, color: "#555", display: "block", marginBottom: "6px" }}>Message</label>
+                                <textarea
+                                    placeholder="Tell us about your project..."
+                                    value={form.message}
+                                    onChange={(e) => { if (e.target.value.length <= 500) setForm({ ...form, message: e.target.value }); }}
+                                    rows={5}
+                                    style={{
+                                        width: "100%", padding: "14px 18px", border: "1px solid #e0e0e0",
+                                        borderRadius: "12px", fontSize: "15px", outline: "none", resize: "vertical",
+                                        fontFamily: "inherit", transition: "border-color 0.2s", boxSizing: "border-box",
+                                    }}
+                                    onFocus={(e) => { e.target.style.borderColor = RED; }}
+                                    onBlur={(e) => { e.target.style.borderColor = "#e0e0e0"; }}
+                                />
+                                <div style={{ textAlign: "right", fontSize: "12px", color: charCount >= 450 ? RED : "#aaa", marginTop: "4px" }}>
+                                    {charCount}/500
+                                </div>
+                            </div>
+
+                            {/* Submit */}
+                            <button onClick={handleSubmit} style={{
+                                background: RED, color: "#fff", border: "none",
+                                padding: "16px", borderRadius: "12px", fontWeight: 700,
+                                fontSize: "16px", cursor: "pointer", width: "100%",
+                                boxShadow: `0 4px 20px rgba(232,50,90,0.3)`,
+                                transition: "transform 0.2s, box-shadow 0.2s",
+                            }}
+                                onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 28px rgba(232,50,90,0.4)"; }}
+                                onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(232,50,90,0.3)"; }}
                             >
-                                {
-                                    service.desc
-                                }
-                            </p>
+                                Send Message 🚀
+                            </button>
                         </div>
-                    ))}
+                    )}
+                </div>
+            </div>
+
+            {/* ── WHAT WE BUILD ── */}
+            <section style={{ background: "#fafafa", padding: "70px 24px", textAlign: "center", borderTop: "1px solid #eee" }}>
+                <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+                    <p style={{ color: RED, fontWeight: 600, fontSize: "13px", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "10px" }}>Our Services</p>
+                    <h2 style={{ fontSize: "30px", fontWeight: 800, marginBottom: "8px" }}>
+                        What We <span style={{ color: RED }}>Build</span>
+                    </h2>
+                    <p style={{ color: "#888", fontSize: "15px", maxWidth: "500px", margin: "0 auto 48px" }}>
+                        Modern digital solutions designed for startups, businesses, and growing brands.
+                    </p>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px" }}>
+                        {services.map((s) => (
+                            <div key={s.title} style={{
+                                background: "#fff", border: "1px solid #eee", borderRadius: "16px",
+                                padding: "36px 24px", cursor: "pointer", transition: "all 0.25s",
+                            }}
+                                onMouseOver={(e) => { e.currentTarget.style.boxShadow = `0 8px 30px rgba(232,50,90,0.12)`; e.currentTarget.style.borderColor = RED; e.currentTarget.style.transform = "translateY(-4px)"; }}
+                                onMouseOut={(e) => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = "#eee"; e.currentTarget.style.transform = "translateY(0)"; }}
+                            >
+                                <div style={{ fontSize: "40px", marginBottom: "16px" }}>{s.icon}</div>
+                                <h3 style={{ fontWeight: 700, fontSize: "17px", marginBottom: "8px" }}>{s.title}</h3>
+                                <p style={{ color: "#888", fontSize: "14px", lineHeight: 1.6 }}>{s.desc}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
-            {/* FAQ */}
-            <section
-                style={{
-                    maxWidth: "900px",
-                    margin: "0 auto",
-                    padding:
-                        "0 24px 120px",
-                }}
-            >
-                <div
-                    style={{
-                        textAlign: "center",
-                        marginBottom: "50px",
-                    }}
-                >
-                    <h2
-                        style={{
-                            fontSize: "36px",
-                            marginBottom: "14px",
-                        }}
-                    >
-                        Frequently Asked
-                        Questions
-                    </h2>
+            {/* ── FAQ ── */}
+            <section style={{ maxWidth: "700px", margin: "0 auto", padding: "70px 24px" }}>
+                <p style={{ color: RED, fontWeight: 600, fontSize: "13px", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "10px", textAlign: "center" }}>FAQ</p>
+                <h2 style={{ fontSize: "30px", fontWeight: 800, marginBottom: "8px", textAlign: "center" }}>
+                    Frequently Asked <span style={{ color: RED }}>Questions</span>
+                </h2>
+                <p style={{ color: "#888", fontSize: "15px", textAlign: "center", marginBottom: "40px" }}>
+                    Common questions clients ask us.
+                </p>
 
-                    <p
-                        style={{
-                            color: "#8b949e",
-                        }}
-                    >
-                        Common questions
-                        clients ask us.
-                    </p>
-                </div>
-
-                {[
-                    {
-                        q: "How long does a website take?",
-                        a: "Most websites take 1-3 weeks depending on complexity.",
-                    },
-                    {
-                        q: "Do you build mobile apps?",
-                        a: "Yes. We develop Android and cross-platform applications.",
-                    },
-                    {
-                        q: "Can you redesign old websites?",
-                        a: "Absolutely. We modernize and improve existing websites.",
-                    },
-                ].map((faq, i) => (
-                    <div
-                        key={i}
-                        style={{
-                            background:
-                                "#161b22",
-                            border:
-                                "1px solid #1e2530",
-                            borderRadius:
-                                "20px",
-                            padding:
-                                "26px",
-                            marginBottom:
-                                "18px",
-                        }}
-                    >
-                        <h3
-                            style={{
-                                marginBottom:
-                                    "12px",
-                                fontSize:
-                                    "21px",
-                            }}
-                        >
-                            {faq.q}
-                        </h3>
-
-                        <p
-                            style={{
-                                color:
-                                    "#8b949e",
-                                lineHeight:
-                                    1.7,
-                                margin: 0,
-                            }}
-                        >
-                            {faq.a}
-                        </p>
+                {faqs.map((faq, i) => (
+                    <div key={i} style={{
+                        border: "1px solid #eee", borderRadius: "14px", marginBottom: "12px",
+                        overflow: "hidden", transition: "border-color 0.2s",
+                        borderColor: openFaq === i ? RED : "#eee",
+                    }}>
+                        <button onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{
+                            width: "100%", background: "none", border: "none", cursor: "pointer",
+                            padding: "20px 24px", display: "flex", justifyContent: "space-between",
+                            alignItems: "center", fontFamily: "inherit", textAlign: "left",
+                        }}>
+                            <span style={{ fontWeight: 600, fontSize: "15px", color: openFaq === i ? RED : "#111" }}>{faq.q}</span>
+                            <span style={{
+                                fontSize: "20px", color: RED, transform: openFaq === i ? "rotate(45deg)" : "rotate(0deg)",
+                                transition: "transform 0.25s", flexShrink: 0, marginLeft: "12px",
+                            }}>+</span>
+                        </button>
+                        {openFaq === i && (
+                            <div style={{ padding: "0 24px 20px", color: "#666", fontSize: "14px", lineHeight: 1.7 }}>
+                                {faq.a}
+                            </div>
+                        )}
                     </div>
                 ))}
             </section>
 
-            {/* CHATBOT */}
-            <div
-                style={{
-                    position: "fixed",
-                    bottom: "24px",
-                    right: "24px",
-                    zIndex: 999,
-                }}
-            >
-                {chatOpen && (
-                    <div
-                        style={{
-                            width:
-                                "min(360px, calc(100vw - 32px))",
-                            height: "500px",
-                            background:
-                                "#161b22",
-                            border:
-                                "1px solid #1e2530",
-                            borderRadius:
-                                "20px",
-                            overflow:
-                                "hidden",
-                            display: "flex",
-                            flexDirection:
-                                "column",
-                            marginBottom:
-                                "14px",
-                            boxShadow:
-                                "0 20px 50px rgba(0,0,0,0.5)",
-                        }}
-                    >
-                        {/* HEADER */}
-                        <div
-                            style={{
-                                background:
-                                    "#e8a020",
-                                padding:
-                                    "16px 20px",
-                                display: "flex",
-                                justifyContent:
-                                    "space-between",
-                                alignItems:
-                                    "center",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    display:
-                                        "flex",
-                                    alignItems:
-                                        "center",
-                                    gap: "12px",
-                                }}
-                            >
-                                <div
-                                    style={{
-                                        width:
-                                            "40px",
-                                        height:
-                                            "40px",
-                                        borderRadius:
-                                            "50%",
-                                        background:
-                                            "rgba(0,0,0,0.15)",
-                                        display:
-                                            "flex",
-                                        alignItems:
-                                            "center",
-                                        justifyContent:
-                                            "center",
-                                    }}
-                                >
-                                    🤖
-                                </div>
-
-                                <div>
-                                    <p
-                                        style={{
-                                            margin: 0,
-                                            fontWeight: 700,
-                                            color:
-                                                "#0d1117",
-                                        }}
-                                    >
-                                        Dantechdevs
-                                        AI
-                                    </p>
-
-                                    <p
-                                        style={{
-                                            margin: 0,
-                                            fontSize:
-                                                "12px",
-                                            color:
-                                                "rgba(13,17,23,0.7)",
-                                        }}
-                                    >
-                                        Online
-                                    </p>
-                                </div>
-                            </div>
-
-                            <button
-                                onClick={() =>
-                                    setChatOpen(
-                                        false
-                                    )
-                                }
-                                style={{
-                                    background:
-                                        "none",
-                                    border:
-                                        "none",
-                                    fontSize:
-                                        "22px",
-                                    cursor:
-                                        "pointer",
-                                }}
-                            >
-                                ×
-                            </button>
-                        </div>
-
-                        {/* BODY */}
-                        <div
-                            style={{
-                                flex: 1,
-                                overflowY:
-                                    "auto",
-                                padding:
-                                    "16px",
-                                display: "flex",
-                                flexDirection:
-                                    "column",
-                                gap: "12px",
-                            }}
-                        >
-                            {messages.map(
-                                (msg, i) => (
-                                    <div
-                                        key={i}
-                                        style={{
-                                            display:
-                                                "flex",
-                                            justifyContent:
-                                                msg.role ===
-                                                    "user"
-                                                    ? "flex-end"
-                                                    : "flex-start",
-                                        }}
-                                    >
-                                        <div
-                                            style={{
-                                                background:
-                                                    msg.role ===
-                                                        "user"
-                                                        ? "#e8a020"
-                                                        : "#1e2530",
-                                                color:
-                                                    msg.role ===
-                                                        "user"
-                                                        ? "#0d1117"
-                                                        : "#fff",
-                                                padding:
-                                                    "12px 14px",
-                                                borderRadius:
-                                                    "16px",
-                                                maxWidth:
-                                                    "80%",
-                                            }}
-                                        >
-                                            {
-                                                msg.content
-                                            }
-                                        </div>
-                                    </div>
-                                )
-                            )}
-
-                            {messages.length ===
-                                1 && (
-                                    <div
-                                        style={{
-                                            display:
-                                                "flex",
-                                            flexWrap:
-                                                "wrap",
-                                            gap: "8px",
-                                        }}
-                                    >
-                                        {suggestions.map(
-                                            (
-                                                suggestion
-                                            ) => (
-                                                <button
-                                                    key={
-                                                        suggestion
-                                                    }
-                                                    onClick={() =>
-                                                        setUserInput(
-                                                            suggestion
-                                                        )
-                                                    }
-                                                    style={{
-                                                        background:
-                                                            "#1e2530",
-                                                        border:
-                                                            "none",
-                                                        color:
-                                                            "#fff",
-                                                        padding:
-                                                            "8px 12px",
-                                                        borderRadius:
-                                                            "999px",
-                                                        cursor:
-                                                            "pointer",
-                                                    }}
-                                                >
-                                                    {
-                                                        suggestion
-                                                    }
-                                                </button>
-                                            )
-                                        )}
-                                    </div>
-                                )}
-
-                            {loading && (
-                                <div
-                                    style={{
-                                        display:
-                                            "flex",
-                                        gap: "4px",
-                                    }}
-                                >
-                                    {[0, 1, 2].map(
-                                        (i) => (
-                                            <div
-                                                key={i}
-                                                style={{
-                                                    width:
-                                                        "8px",
-                                                    height:
-                                                        "8px",
-                                                    borderRadius:
-                                                        "50%",
-                                                    background:
-                                                        "#e8a020",
-                                                    animation: `bounce 1s ${i * 0.2}s infinite`,
-                                                }}
-                                            />
-                                        )
-                                    )}
-                                </div>
-                            )}
-
-                            <div
-                                ref={
-                                    chatEndRef
-                                }
-                            />
-                        </div>
-
-                        {/* INPUT */}
-                        <div
-                            style={{
-                                padding:
-                                    "14px",
-                                borderTop:
-                                    "1px solid #1e2530",
-                                display: "flex",
-                                gap: "10px",
-                            }}
-                        >
-                            <input
-                                type="text"
-                                value={
-                                    userInput
-                                }
-                                onChange={(e) =>
-                                    setUserInput(
-                                        e.target
-                                            .value
-                                    )
-                                }
-                                onKeyDown={(
-                                    e
-                                ) =>
-                                    e.key ===
-                                    "Enter" &&
-                                    sendMessage()
-                                }
-                                placeholder="Ask something..."
-                                style={{
-                                    flex: 1,
-                                    background:
-                                        "#0d1117",
-                                    border:
-                                        "1px solid #1e2530",
-                                    borderRadius:
-                                        "10px",
-                                    padding:
-                                        "12px 14px",
-                                    color: "#fff",
-                                    outline:
-                                        "none",
-                                }}
-                            />
-
-                            <button
-                                onClick={
-                                    sendMessage
-                                }
-                                style={{
-                                    width:
-                                        "44px",
-                                    borderRadius:
-                                        "10px",
-                                    border:
-                                        "none",
-                                    background:
-                                        "#e8a020",
-                                    cursor:
-                                        "pointer",
-                                    fontSize:
-                                        "18px",
-                                }}
-                            >
-                                ➤
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {/* TOGGLE */}
-                <button
-                    onClick={() =>
-                        setChatOpen(
-                            !chatOpen
-                        )
-                    }
-                    style={{
-                        width: "64px",
-                        height: "64px",
-                        borderRadius:
-                            "50%",
-                        border: "none",
-                        background:
-                            "#e8a020",
-                        fontSize: "28px",
-                        cursor: "pointer",
-                        boxShadow:
-                            "0 4px 20px rgba(232,160,32,0.4)",
-                    }}
-                >
-                    {chatOpen
-                        ? "×"
-                        : "🤖"}
-                </button>
+            {/* ── AI CHAT HINT ── */}
+            <div style={{
+                textAlign: "center", padding: "40px 24px 70px",
+                borderTop: "1px solid #eee",
+            }}>
+                <div style={{ fontSize: "48px", marginBottom: "12px" }}>🤖</div>
+                <h3 style={{ fontWeight: 700, fontSize: "18px", marginBottom: "8px" }}>Still have questions?</h3>
+                <p style={{ color: "#888", fontSize: "14px", marginBottom: "20px" }}>
+                    Chat with our AI assistant for instant answers.
+                </p>
+                <a href="https://wa.me/254712328150" target="_blank" rel="noopener noreferrer" style={{
+                    display: "inline-flex", alignItems: "center", gap: "8px",
+                    background: RED, color: "#fff", textDecoration: "none",
+                    padding: "12px 28px", borderRadius: "999px",
+                    fontWeight: 700, fontSize: "14px",
+                    boxShadow: "0 4px 16px rgba(232,50,90,0.3)",
+                }}>
+                    💬 Start a Conversation
+                </a>
             </div>
 
             <style>{`
-                @media (max-width: 768px) {
-                    .contact-grid {
-                        grid-template-columns: 1fr !important;
-                    }
-                }
-
-                @keyframes bounce {
-                    0%, 80%, 100% {
-                        transform: translateY(0);
-                    }
-
-                    40% {
-                        transform: translateY(-8px);
-                    }
-                }
-
-                @keyframes fadeUp {
-                    from {
-                        opacity: 0;
-                        transform: translateY(20px);
-                    }
-
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-            `}</style>
+        @media (max-width: 768px) {
+          div[style*="gridTemplateColumns: '1fr 1.4fr'"] {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
         </main>
     );
 }
