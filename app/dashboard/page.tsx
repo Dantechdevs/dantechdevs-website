@@ -337,7 +337,7 @@ function FSelect({ label, children, ...props }: { label?: string; children: Reac
     );
 }
 
-function TH({ children }: { children: React.ReactNode }) {
+function TH({ children }: { children?: React.ReactNode }) {
     return <th style={{
         textAlign: "left", padding: "8px 12px", color: "var(--text-dim)", fontWeight: 700,
         fontSize: 10, textTransform: "uppercase", letterSpacing: "0.5px", borderBottom: "1px solid var(--border)"
