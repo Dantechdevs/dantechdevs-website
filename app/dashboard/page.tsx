@@ -241,7 +241,7 @@ function Btn({ children, onClick, variant = "primary", sm = false }: {
                 fontSize: sm ? 11 : 13, fontWeight: 700, cursor: "pointer",
                 fontFamily: "'Plus Jakarta Sans',sans-serif", transition: "all 0.2s",
                 transform: hov ? "translateY(-1px)" : "none",
-                border: `1px solid ${s.border}`, whiteSpace: "nowrap", ...s
+                ...s, border: `1px solid ${s.border}`, whiteSpace: "nowrap"
             }}>{children}</button>
     );
 }
