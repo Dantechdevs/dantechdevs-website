@@ -137,7 +137,7 @@ function ProductCard({ product }: { product: Product }) {
                 alignItems: "center", justifyContent: "center",
                 fontSize: 42, position: "relative",
             }}>
-                {product.emoji ?? meta.emoji}
+                {meta.emoji}
                 <div style={{ position: "absolute", top: 10, left: 10 }}>
                     <Badge badge={product.badge} />
                 </div>
