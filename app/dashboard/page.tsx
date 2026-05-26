@@ -11,11 +11,11 @@ const A = {
 /* ══════════════════════════════════════════
    ANIMATED NUMBER
 ══════════════════════════════════════════ */
-function AnimatedNum({ value, duration = 1200 }) {
+function AnimatedNum({ value, duration = 1200 }: { value: number; duration?: number }) {
     const [d, setD] = useState(0);
     useEffect(() => {
-        let s = null;
-        const step = (ts) => {
+        let s: number | null = null;
+        const step = (ts: number) => {
             if (!s) s = ts;
             const p = Math.min((ts - s) / duration, 1), e = 1 - Math.pow(1 - p, 3);
             setD(e * value);
@@ -29,7 +29,7 @@ function AnimatedNum({ value, duration = 1200 }) {
 /* ══════════════════════════════════════════
    SPARKLINE
 ══════════════════════════════════════════ */
-function SparkLine({ data, color }) {
+function SparkLine({ data, color }: { data: number[]; color: string }) {
     const w = 80, h = 36, min = Math.min(...data), max = Math.max(...data), range = max - min || 1;
     const pts = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * h}`).join(" ");
     const id = `sg${color.replace(/[^a-z0-9]/gi, "")}`;
@@ -50,7 +50,8 @@ function SparkLine({ data, color }) {
 /* ══════════════════════════════════════════
    DONUT CHART
 ══════════════════════════════════════════ */
-function DonutChart({ segments, size = 120 }) {
+interface DonutSegment { value: number; color: string; }
+function DonutChart({ segments, size = 120 }: { segments: DonutSegment[]; size?: number }) {
     const r = 42, cx = size / 2, cy = size / 2, circ = 2 * Math.PI * r;
     let cum = 0;
     const total = segments.reduce((a, s) => a + s.value, 0);
@@ -72,7 +73,7 @@ function DonutChart({ segments, size = 120 }) {
 /* ══════════════════════════════════════════
    BAR CHART
 ══════════════════════════════════════════ */
-function BarChart({ data, colors, labels }) {
+function BarChart({ data, colors, labels }: { data: number[]; colors: string[]; labels: string[] }) {
     const max = Math.max(...data);
     return (
         <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 110, paddingTop: 20 }}>
@@ -102,7 +103,18 @@ function BarChart({ data, colors, labels }) {
 /* ══════════════════════════════════════════
    STAT CARD
 ══════════════════════════════════════════ */
-function StatCard({ icon, label, value, prefix = "", suffix = "", sub, subUp, color, spark }) {
+interface StatCardProps {
+    icon: string;
+    label: string;
+    value: number;
+    prefix?: string;
+    suffix?: string;
+    sub?: string;
+    subUp?: boolean;
+    color: string;
+    spark?: number[];
+}
+function StatCard({ icon, label, value, prefix = "", suffix = "", sub, subUp, color, spark }: StatCardProps) {
     const [hov, setHov] = useState(false);
     return (
         <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
@@ -148,7 +160,12 @@ function StatCard({ icon, label, value, prefix = "", suffix = "", sub, subUp, co
 /* ══════════════════════════════════════════
    PANEL
 ══════════════════════════════════════════ */
-function Panel({ title, action, children, style: sx = {} }) {
+function Panel({ title, action, children, style: sx = {} }: {
+    title?: string;
+    action?: React.ReactNode;
+    children: React.ReactNode;
+    style?: React.CSSProperties;
+}) {
     return (
         <div style={{
             background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 16,
@@ -171,8 +188,8 @@ function Panel({ title, action, children, style: sx = {} }) {
 /* ══════════════════════════════════════════
    BADGE
 ══════════════════════════════════════════ */
-function Badge({ label, type = "neutral" }) {
-    const map = {
+function Badge({ label, type = "neutral" }: { label: string; type?: string }) {
+    const map: Record<string, { bg: string; color: string; border: string }> = {
         active: { bg: `${A.emerald}15`, color: A.emerald, border: `${A.emerald}30` },
         trial: { bg: `${A.amber}15`, color: A.amber, border: `${A.amber}30` },
         expired: { bg: `${A.rose}15`, color: A.rose, border: `${A.rose}30` },
@@ -198,9 +215,14 @@ function Badge({ label, type = "neutral" }) {
 /* ══════════════════════════════════════════
    BUTTON
 ══════════════════════════════════════════ */
-function Btn({ children, onClick, variant = "primary", sm = false }) {
+function Btn({ children, onClick, variant = "primary", sm = false }: {
+    children: React.ReactNode;
+    onClick?: () => void;
+    variant?: "primary" | "outline" | "ghost";
+    sm?: boolean;
+}) {
     const [hov, setHov] = useState(false);
-    const v = {
+    const v: Record<string, React.CSSProperties & { background: string; color: string; border: string }> = {
         primary: {
             background: `linear-gradient(135deg,${A.blue},${A.blueLt})`, color: "#fff",
             border: "transparent", boxShadow: hov ? `0 4px 14px ${A.blue}40` : "none"
@@ -227,7 +249,12 @@ function Btn({ children, onClick, variant = "primary", sm = false }) {
 /* ══════════════════════════════════════════
    MODAL
 ══════════════════════════════════════════ */
-function Modal({ title, sub, children, onClose }) {
+function Modal({ title, sub, children, onClose }: {
+    title: string;
+    sub?: string;
+    children: React.ReactNode;
+    onClose: () => void;
+}) {
     return (
         <div style={{
             position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)",
@@ -259,7 +286,7 @@ function Modal({ title, sub, children, onClose }) {
     );
 }
 
-function Input({ label, ...props }) {
+function Input({ label, ...props }: { label?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
     return (
         <div>
             {label && <div style={{
@@ -276,7 +303,7 @@ function Input({ label, ...props }) {
     );
 }
 
-function Textarea({ label, ...props }) {
+function Textarea({ label, ...props }: { label?: string } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
     return (
         <div>
             {label && <div style={{
@@ -293,7 +320,7 @@ function Textarea({ label, ...props }) {
     );
 }
 
-function FSelect({ label, children, ...props }) {
+function FSelect({ label, children, ...props }: { label?: string; children: React.ReactNode } & React.SelectHTMLAttributes<HTMLSelectElement>) {
     return (
         <div>
             {label && <div style={{
@@ -310,13 +337,13 @@ function FSelect({ label, children, ...props }) {
     );
 }
 
-function TH({ children }) {
+function TH({ children }: { children: React.ReactNode }) {
     return <th style={{
         textAlign: "left", padding: "8px 12px", color: "var(--text-dim)", fontWeight: 700,
         fontSize: 10, textTransform: "uppercase", letterSpacing: "0.5px", borderBottom: "1px solid var(--border)"
     }}>{children}</th>;
 }
-function TR({ children }) {
+function TR({ children }: { children: React.ReactNode }) {
     const [hov, setHov] = useState(false);
     return <tr onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
         style={{
@@ -324,14 +351,14 @@ function TR({ children }) {
             transition: "background 0.15s"
         }}>{children}</tr>;
 }
-function TD({ children, bold, amount }) {
+function TD({ children, bold, amount }: { children: React.ReactNode; bold?: boolean; amount?: boolean }) {
     return <td style={{
         padding: "12px 12px", color: amount ? A.emerald : bold ? "var(--text-primary)" : "var(--text-secondary)",
         fontWeight: bold || amount ? 700 : 400, verticalAlign: "middle"
     }}>{children}</td>;
 }
 
-function Tabs({ tabs, active, onChange }) {
+function Tabs({ tabs, active, onChange }: { tabs: string[]; active: string; onChange: (t: string) => void }) {
     return (
         <div style={{ display: "flex", gap: 2, borderBottom: "1px solid var(--border)" }}>
             {tabs.map(t => (
@@ -636,7 +663,12 @@ const NOTIFS = [
 ];
 
 /* Collapsible section */
-function SidebarSection({ label, children, defaultOpen = true, badge }) {
+function SidebarSection({ label, children, defaultOpen = true, badge }: {
+    label: string;
+    children: React.ReactNode;
+    defaultOpen?: boolean;
+    badge?: number;
+}) {
     const [open, setOpen] = useState(defaultOpen);
     return (
         <div style={{ marginBottom: 4 }}>
@@ -667,8 +699,19 @@ function SidebarSection({ label, children, defaultOpen = true, badge }) {
     );
 }
 
-/* Sidebar item with tooltip + badge + sub-items */
-function SidebarItem({ icon, label, active, onClick, badge, badgeColor, dot, dotColor, sub, indent = false }) {
+/* Sidebar item */
+function SidebarItem({ icon, label, active, onClick, badge, badgeColor, dot, dotColor, sub, indent = false }: {
+    icon: string;
+    label: string;
+    active?: boolean;
+    onClick?: () => void;
+    badge?: number | string;
+    badgeColor?: string;
+    dot?: boolean;
+    dotColor?: string;
+    sub?: string | number;
+    indent?: boolean;
+}) {
     const [hov, setHov] = useState(false);
     return (
         <button onClick={onClick}
@@ -718,7 +761,7 @@ function SidebarItem({ icon, label, active, onClick, badge, badgeColor, dot, dot
 }
 
 /* Notification flyout */
-function NotifFlyout({ notifs, onClose, dark }) {
+function NotifFlyout({ notifs, onClose, dark }: { notifs: typeof NOTIFS; onClose: () => void; dark: boolean }) {
     const [items, setItems] = useState(notifs);
     const unreadCount = items.filter(n => n.unread).length;
     return (
@@ -745,8 +788,8 @@ function NotifFlyout({ notifs, onClose, dark }) {
                         background: n.unread ? (dark ? "rgba(37,99,235,0.05)" : `${A.blue}04`) : "transparent",
                         cursor: "pointer", transition: "background 0.15s",
                     }}
-                    onMouseEnter={e => e.currentTarget.style.background = dark ? "rgba(255,255,255,0.03)" : "var(--bg-muted)"}
-                    onMouseLeave={e => e.currentTarget.style.background = n.unread ? (dark ? "rgba(37,99,235,0.05)" : `${A.blue}04`) : "transparent"}>
+                    onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = dark ? "rgba(255,255,255,0.03)" : "var(--bg-muted)"}
+                    onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = n.unread ? (dark ? "rgba(37,99,235,0.05)" : `${A.blue}04`) : "transparent"}>
                     <div style={{
                         width: 34, height: 34, borderRadius: 10, flexShrink: 0,
                         background: `${n.color}12`, border: `1px solid ${n.color}20`,
@@ -775,9 +818,9 @@ function NotifFlyout({ notifs, onClose, dark }) {
 }
 
 /* Search overlay */
-function SearchOverlay({ onClose, onView }) {
+function SearchOverlay({ onClose, onView }: { onClose: () => void; onView: (v: string) => void }) {
     const [q, setQ] = useState("");
-    const inputRef = useRef(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     useEffect(() => { setTimeout(() => inputRef.current?.focus(), 60); }, []);
 
     const CMDS = [
@@ -823,8 +866,8 @@ function SearchOverlay({ onClose, onView }) {
                             background: "none", border: "none", cursor: "pointer", textAlign: "left",
                             fontFamily: "'Plus Jakarta Sans',sans-serif", transition: "background 0.12s"
                         }}
-                        onMouseEnter={e => e.currentTarget.style.background = "var(--bg-muted)"}
-                        onMouseLeave={e => e.currentTarget.style.background = "none"}>
+                        onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "var(--bg-muted)"}
+                        onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "none"}>
                         <span style={{ fontSize: 16 }}>{item.icon}</span>
                         <span style={{ fontSize: 13, color: "var(--text-primary)", flex: 1 }}>{item.label}</span>
                         <span style={{ fontSize: 11, color: "var(--text-dim)" }}>↵</span>
@@ -839,14 +882,13 @@ function SearchOverlay({ onClose, onView }) {
 }
 
 /* User menu flyout */
-function UserMenu({ dark, setDark, onClose }) {
+function UserMenu({ dark, setDark, onClose }: { dark: boolean; setDark: React.Dispatch<React.SetStateAction<boolean>>; onClose: () => void }) {
     return (
         <div style={{
             position: "absolute", bottom: "calc(100% + 8px)", left: 0, right: 0, zIndex: 200,
             background: "var(--panel)", border: "1px solid var(--border-hi)", borderRadius: 14,
             boxShadow: "var(--shadow-xl)", overflow: "hidden", animation: "sbSlideUp 0.22s cubic-bezier(.4,0,.2,1)"
         }}>
-            {/* Profile header */}
             <div style={{
                 padding: "14px 16px", borderBottom: "1px solid var(--border)",
                 display: "flex", alignItems: "center", gap: 12
@@ -868,8 +910,6 @@ function UserMenu({ dark, setDark, onClose }) {
                     <div style={{ fontSize: 11, color: "var(--text-muted)" }}>info@dantechdevs.com</div>
                 </div>
             </div>
-
-            {/* Plan chip */}
             <div style={{ padding: "10px 16px", borderBottom: "1px solid var(--border)" }}>
                 <div style={{
                     display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -886,8 +926,6 @@ function UserMenu({ dark, setDark, onClose }) {
                     }}>Upgrade</button>
                 </div>
             </div>
-
-            {/* Menu items */}
             {[
                 { icon: "👤", label: "My Profile", shortcut: "" },
                 { icon: "⚙️", label: "Settings", shortcut: "⌘," },
@@ -903,8 +941,8 @@ function UserMenu({ dark, setDark, onClose }) {
                         fontFamily: "'Plus Jakarta Sans',sans-serif", transition: "background 0.12s",
                         borderTop: i === 5 ? "1px solid var(--border)" : "none"
                     }}
-                    onMouseEnter={e => e.currentTarget.style.background = item.danger ? `${A.rose}08` : "var(--bg-muted)"}
-                    onMouseLeave={e => e.currentTarget.style.background = "none"}>
+                    onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = item.danger ? `${A.rose}08` : "var(--bg-muted)"}
+                    onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "none"}>
                     <span style={{ fontSize: 15 }}>{item.icon}</span>
                     <span style={{ fontSize: 13, flex: 1, textAlign: "left", color: item.danger ? A.rose : "var(--text-primary)", fontWeight: 500 }}>{item.label}</span>
                     {item.shortcut && <kbd style={{ fontSize: 10, padding: "2px 6px", borderRadius: 5, background: "var(--bg-muted)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>{item.shortcut}</kbd>}
@@ -915,17 +953,21 @@ function UserMenu({ dark, setDark, onClose }) {
 }
 
 /* ── THE SIDEBAR ITSELF ── */
-function Sidebar({ view, setView, dark, setDark }) {
+function Sidebar({ view, setView, dark, setDark }: {
+    view: string;
+    setView: (v: string) => void;
+    dark: boolean;
+    setDark: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
     const [notifOpen, setNotifOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
     const [userOpen, setUserOpen] = useState(false);
     const unreadCount = NOTIFS.filter(n => n.unread).length;
-    const sidebarRef = useRef(null);
+    const sidebarRef = useRef<HTMLElement>(null);
 
-    /* close flyouts on outside click */
     useEffect(() => {
-        const handler = (e) => {
-            if (sidebarRef.current && !sidebarRef.current.contains(e.target)) {
+        const handler = (e: MouseEvent) => {
+            if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) {
                 setNotifOpen(false); setSearchOpen(false); setUserOpen(false);
             }
         };
@@ -933,9 +975,8 @@ function Sidebar({ view, setView, dark, setDark }) {
         return () => document.removeEventListener("mousedown", handler);
     }, []);
 
-    /* ⌘K shortcut */
     useEffect(() => {
-        const handler = (e) => {
+        const handler = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === "k") {
                 e.preventDefault();
                 setSearchOpen(p => !p); setNotifOpen(false); setUserOpen(false);
@@ -946,15 +987,15 @@ function Sidebar({ view, setView, dark, setDark }) {
         return () => window.removeEventListener("keydown", handler);
     }, []);
 
-    const toggleFlyout = (name) => {
+    const toggleFlyout = (name: string) => {
         setNotifOpen(name === "notif" ? p => !p : false);
         setSearchOpen(name === "search" ? p => !p : false);
         setUserOpen(name === "user" ? p => !p : false);
     };
 
     const VIEWS = [
-        { key: "admin", icon: "👑", label: "Admin", badge: null },
-        { key: "client", icon: "👤", label: "Client", badge: null },
+        { key: "admin", icon: "👑", label: "Admin", badge: null as number | null },
+        { key: "client", icon: "👤", label: "Client", badge: null as number | null },
         { key: "support", icon: "🎫", label: "Support", badge: 4, badgeColor: A.rose },
     ];
     const NAV_LINKS = [
@@ -974,9 +1015,6 @@ function Sidebar({ view, setView, dark, setDark }) {
 
     return (
         <aside ref={sidebarRef} className="db-sidebar" style={{ position: "relative" }}>
-
-
-
             {/* ── Search / Command bar ── */}
             <div style={{ position: "relative", marginBottom: 18 }}>
                 <button onClick={() => toggleFlyout("search")}
@@ -1001,7 +1039,7 @@ function Sidebar({ view, setView, dark, setDark }) {
                 {VIEWS.map(v => (
                     <SidebarItem key={v.key} icon={v.icon} label={v.label}
                         active={view === v.key} onClick={() => setView(v.key)}
-                        badge={v.badge} badgeColor={v.badgeColor} />
+                        badge={v.badge ?? undefined} badgeColor={"badgeColor" in v ? v.badgeColor : undefined} />
                 ))}
             </SidebarSection>
 
@@ -1025,8 +1063,8 @@ function Sidebar({ view, setView, dark, setDark }) {
                                 cursor: p.active ? "pointer" : "default",
                                 opacity: p.active ? 1 : 0.38, transition: "all 0.18s", marginBottom: 1,
                             }}
-                                onMouseEnter={e => p.active && (e.currentTarget.style.background = "var(--sidebar-item-hover)")}
-                                onMouseLeave={e => (e.currentTarget.style.background = "none")}>
+                                onMouseEnter={e => p.active && ((e.currentTarget as HTMLButtonElement).style.background = "var(--sidebar-item-hover)")}
+                                onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "none")}>
                                 <div style={{
                                     width: 30, height: 30, borderRadius: 9, flexShrink: 0,
                                     background: `${p.color}14`, border: `1px solid ${p.color}25`,
@@ -1055,8 +1093,8 @@ function Sidebar({ view, setView, dark, setDark }) {
                         borderRadius: 10, background: "none", border: `1px dashed var(--sidebar-border)`, cursor: "pointer",
                         marginTop: 4, transition: "all 0.18s"
                     }}
-                        onMouseEnter={e => e.currentTarget.style.background = "var(--sidebar-item-hover)"}
-                        onMouseLeave={e => e.currentTarget.style.background = "none"}>
+                        onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "var(--sidebar-item-hover)"}
+                        onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "none"}>
                         <span style={{ fontSize: 14, color: "var(--sidebar-tag)" }}>＋</span>
                         <span style={{ fontSize: 12, color: "var(--sidebar-tag)", fontWeight: 600, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>Browse all products</span>
                     </button>
@@ -1094,7 +1132,6 @@ function Sidebar({ view, setView, dark, setDark }) {
                 </div>
             </div>
 
-            {/* ── Spacer ── */}
             <div style={{ flex: 1 }} />
 
             {/* ── Bottom action bar ── */}
@@ -1102,16 +1139,14 @@ function Sidebar({ view, setView, dark, setDark }) {
                 paddingTop: 12, borderTop: "1px solid var(--sidebar-border)", display: "flex",
                 alignItems: "center", gap: 6, position: "relative"
             }}>
-
-                {/* User avatar / menu trigger */}
                 <button onClick={() => toggleFlyout("user")} style={{
                     display: "flex", alignItems: "center", gap: 9,
                     flex: 1, background: "none", border: "none", cursor: "pointer",
                     borderRadius: 10, padding: "6px 8px", transition: "background 0.18s", position: "relative",
                     textAlign: "left"
                 }}
-                    onMouseEnter={e => e.currentTarget.style.background = "var(--sidebar-item-hover)"}
-                    onMouseLeave={e => e.currentTarget.style.background = "none"}>
+                    onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "var(--sidebar-item-hover)"}
+                    onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "none"}>
                     <div style={{ position: "relative", flexShrink: 0 }}>
                         <div style={{
                             width: 34, height: 34, borderRadius: "50%",
@@ -1137,7 +1172,6 @@ function Sidebar({ view, setView, dark, setDark }) {
                     }}>▾</span>
                 </button>
 
-                {/* Notification bell */}
                 <div style={{ position: "relative" }}>
                     <button onClick={() => toggleFlyout("notif")} style={{
                         width: 34, height: 34, borderRadius: 9, display: "flex", alignItems: "center",
@@ -1157,7 +1191,6 @@ function Sidebar({ view, setView, dark, setDark }) {
                     </button>
                 </div>
 
-                {/* Dark mode toggle */}
                 <button onClick={() => setDark(d => !d)} title={dark ? "Light mode" : "Dark mode"}
                     style={{
                         width: 34, height: 34, borderRadius: 9, display: "flex", alignItems: "center",
@@ -1165,12 +1198,11 @@ function Sidebar({ view, setView, dark, setDark }) {
                         border: "1px solid transparent", cursor: "pointer", transition: "all 0.18s", flexShrink: 0,
                         color: "var(--sidebar-brand)"
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = "var(--sidebar-item-hover)"; e.currentTarget.style.borderColor = "var(--sidebar-border)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.borderColor = "transparent"; }}>
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--sidebar-item-hover)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--sidebar-border)"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "none"; (e.currentTarget as HTMLButtonElement).style.borderColor = "transparent"; }}>
                     {dark ? "☀️" : "🌙"}
                 </button>
 
-                {/* Flyouts */}
                 {notifOpen && <NotifFlyout notifs={NOTIFS} onClose={() => setNotifOpen(false)} dark={dark} />}
                 {userOpen && <UserMenu dark={dark} setDark={setDark} onClose={() => setUserOpen(false)} />}
             </div>
@@ -1194,12 +1226,12 @@ export default function Dashboard() {
     useEffect(() => {
         const mq = window.matchMedia("(prefers-color-scheme: dark)");
         setDark(mq.matches);
-        const h = (e) => setDark(e.matches);
+        const h = (e: MediaQueryListEvent) => setDark(e.matches);
         mq.addEventListener("change", h);
         return () => mq.removeEventListener("change", h);
     }, []);
 
-    const cv = VIEWS_LIST.find(v => v.key === view);
+    const cv = VIEWS_LIST.find(v => v.key === view)!;
 
     return (
         <div className={dark ? "db-root db-dark" : "db-root"}>
