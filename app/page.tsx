@@ -121,12 +121,17 @@ export default function HomePage() {
       {/* ── HERO ── */}
       <section style={{
         position: "relative",
-        background: "linear-gradient(rgba(0,0,0,0.62), rgba(0,0,0,0.62)), url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1400&q=80') center/cover no-repeat",
-        padding: "110px 24px 100px", textAlign: "center", color: "#fff",
+        background: "linear-gradient(rgba(0,0,0,0.62), rgba(0,0,0,0.62)), url('/hero-bg.jpg') center/cover no-repeat",
+        padding: "110px 24px 100px",
+        textAlign: "center",
+        color: "#fff",
       }}>
         <h1 style={{
-          fontSize: "clamp(2.2rem, 5vw, 3.6rem)", fontWeight: 800,
-          lineHeight: 1.15, margin: "0 auto 18px", maxWidth: "800px",
+          fontSize: "clamp(2.2rem, 5vw, 3.6rem)",
+          fontWeight: 800,
+          lineHeight: 1.15,
+          margin: "0 auto 18px",
+          maxWidth: "800px",
         }}>
           The Best Digital Software<br />Marketplace for Kenya
         </h1>
@@ -137,9 +142,14 @@ export default function HomePage() {
 
         {/* Search Bar */}
         <div style={{
-          display: "flex", alignItems: "center", maxWidth: "560px",
-          margin: "0 auto 40px", background: "rgba(255,255,255,0.97)",
-          borderRadius: "40px", overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+          display: "flex",
+          alignItems: "center",
+          maxWidth: "560px",
+          margin: "0 auto 40px",
+          background: "rgba(255,255,255,0.97)",
+          borderRadius: "40px",
+          overflow: "hidden",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
         }}>
           <input
             type="text"
@@ -147,15 +157,25 @@ export default function HomePage() {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search products..."
             style={{
-              flex: 1, border: "none", outline: "none",
-              padding: "18px 24px", fontSize: "16px",
-              background: "transparent", color: "#111",
+              flex: 1,
+              border: "none",
+              outline: "none",
+              padding: "18px 24px",
+              fontSize: "16px",
+              background: "transparent",
+              color: "#111",
             }}
           />
           <button style={{
-            background: "#e8325a", border: "none",
-            padding: "18px 22px", cursor: "pointer", fontSize: "18px", color: "#fff",
-          }}>🔍</button>
+            background: "#e8325a",
+            border: "none",
+            padding: "18px 22px",
+            cursor: "pointer",
+            fontSize: "18px",
+            color: "#fff",
+          }}>
+            🔍
+          </button>
         </div>
 
         {/* Quick pills */}
@@ -166,8 +186,13 @@ export default function HomePage() {
             { icon: "🎨", label: "Graphics" },
           ].map((item) => (
             <div key={item.label} style={{
-              display: "flex", alignItems: "center", gap: "8px",
-              color: "#fff", fontSize: "16px", cursor: "pointer", fontWeight: 500,
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              color: "#fff",
+              fontSize: "16px",
+              cursor: "pointer",
+              fontWeight: 500,
             }}>
               <span>{item.icon}</span>
               <span>{item.label}</span>
@@ -190,9 +215,12 @@ export default function HomePage() {
             <div
               key={cat.label}
               style={{
-                border: "1px solid #eee", borderRadius: "16px",
-                padding: "36px 20px", cursor: "pointer",
-                transition: "all 0.25s ease", background: "#fff",
+                border: "1px solid #eee",
+                borderRadius: "16px",
+                padding: "36px 20px",
+                cursor: "pointer",
+                transition: "all 0.25s ease",
+                background: "#fff",
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.boxShadow = "0 8px 30px rgba(232,50,90,0.15)";
@@ -229,7 +257,8 @@ export default function HomePage() {
           <div style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))",
-            gap: "24px", textAlign: "left",
+            gap: "24px",
+            textAlign: "left",
           }}>
             {visibleProducts.map((product) => (
               <ProductCard key={product.id} product={product} variant="grid" />
@@ -237,6 +266,7 @@ export default function HomePage() {
           </div>
         )}
       </section>
+
     </main>
   );
 }
