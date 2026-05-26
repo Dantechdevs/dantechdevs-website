@@ -975,32 +975,7 @@ function Sidebar({ view, setView, dark, setDark }) {
     return (
         <aside ref={sidebarRef} className="db-sidebar" style={{ position: "relative" }}>
 
-            {/* ── Brand ── */}
-            <div style={{ padding: "0 8px", marginBottom: 22 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
-                    <div style={{
-                        width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-                        background: `linear-gradient(135deg,${A.blue},${A.cyan})`,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 17, boxShadow: `0 4px 14px ${A.blue}30`
-                    }}>⚡</div>
-                    <div style={{ minWidth: 0 }}>
-                        <div style={{ fontWeight: 800, fontSize: 15, color: "var(--sidebar-brand)", letterSpacing: "-0.3px", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>Dantechdevs</div>
-                        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: "var(--sidebar-tag)", marginTop: 1 }}>IT & Consultancy</div>
-                    </div>
-                    {/* Live dot */}
-                    <div style={{
-                        marginLeft: "auto", display: "flex", alignItems: "center", gap: 4, padding: "3px 8px",
-                        borderRadius: 999, background: `${A.emerald}12`, border: `1px solid ${A.emerald}22`, flexShrink: 0
-                    }}>
-                        <div style={{
-                            width: 5, height: 5, borderRadius: "50%", background: A.emerald,
-                            animation: "sbPulse 2s infinite"
-                        }} />
-                        <span style={{ fontSize: 9, fontWeight: 700, color: A.emerald }}>LIVE</span>
-                    </div>
-                </div>
-            </div>
+
 
             {/* ── Search / Command bar ── */}
             <div style={{ position: "relative", marginBottom: 18 }}>
