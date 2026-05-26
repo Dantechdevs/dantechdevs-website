@@ -121,7 +121,7 @@ export default function HomePage() {
       {/* ── HERO ── */}
       <section style={{
         position: "relative",
-        background: "linear-gradient(rgba(0,0,0,0.62), rgba(0,0,0,0.62)), url('/hero-bg.jpg') center/cover no-repeat",
+        background: "linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('/hero-bg.jpg') center/cover no-repeat",
         padding: "110px 24px 100px",
         textAlign: "center",
         color: "#fff",
@@ -132,11 +132,13 @@ export default function HomePage() {
           lineHeight: 1.15,
           margin: "0 auto 18px",
           maxWidth: "800px",
+          color: "#ffffff",
+          textShadow: "0 2px 12px rgba(0,0,0,0.4)",
         }}>
           The Best Digital Software<br />Marketplace for Kenya
         </h1>
 
-        <p style={{ color: "#e8325a", fontSize: "17px", marginBottom: "36px", fontWeight: 500 }}>
+        <p style={{ color: "#ff6b8a", fontSize: "17px", marginBottom: "36px", fontWeight: 500 }}>
           M-Pesa integrated, locally supported, and priced for the Kenyan market
         </p>
 
