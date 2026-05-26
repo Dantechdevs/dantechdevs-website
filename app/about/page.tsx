@@ -92,9 +92,9 @@ function SkillBar({ label, pct, color }: { label: string; pct: number; color: st
 const TEAM = [
     {
         initials: "DN", name: "Daniel Ngwasi", role: "Founder & CEO",
-        desc: "Full-stack developer with 8+ years building enterprise software for African businesses.",
+        desc: "Full-stack developer with 8+ years building enterprise software for African businesses using Python, Django, PHP, Laravel, and JavaScript.",
         color: C.blue,
-        skills: [{ label: "Next.js / React", pct: 96 }, { label: "Laravel / PHP", pct: 91 }, { label: "System Architecture", pct: 88 }],
+        skills: [{ label: "Python / Django", pct: 95 }, { label: "PHP / Laravel", pct: 93 }, { label: "JavaScript / Next.js", pct: 96 }],
         quote: "Every product we ship closes a gap that's held African businesses back.",
     },
     {
@@ -651,7 +651,7 @@ export default function AboutPage() {
                                                         <a key={label} href="#" className="social-link" title={label}>{icon}</a>
                                                     ))}
                                                 </div>
-                                                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", marginTop: 14 }}>← Tap to flip back</div>
+                                                <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 14, padding: "5px 10px", borderRadius: 6, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.18)", fontSize: 11, fontWeight: 500, color: "rgba(255,255,255,0.75)" }}>← Tap to flip back</div>
                                             </div>
                                         </div>
                                     </div>
