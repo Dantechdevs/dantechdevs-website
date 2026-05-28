@@ -626,7 +626,7 @@ function AdminDash() {
             </div>
 
             {/* ── Stat cards ── */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 14 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14 }}>
                 <StatCard icon="💰" label="Total Revenue" value={284500} prefix="KES " sub="18% this month" subUp={true} color={A.emerald} spark={[40, 55, 48, 70, 65, 85, 95]} />
                 <StatCard icon="👥" label="Total Clients" value={2841} sub="124 new this week" subUp={true} color={A.blue} spark={[2600, 2650, 2700, 2720, 2760, 2810, 2841]} />
                 <StatCard icon="📦" label="Active Products" value={6} sub="All products live" subUp={true} color={A.cyan} spark={[4, 4, 5, 5, 6, 6, 6]} />
@@ -1428,7 +1428,7 @@ export default function Dashboard() {
                     ))}
                 </div>
 
-                <div style={{ padding: "30px 36px", maxWidth: 1100 }}>
+                <div style={{ padding: "30px 36px", maxWidth: "100%" }}>
                     {view === "admin" && <AdminDash />}
                     {view === "client" && <ClientDash />}
                     {view === "support" && <SupportDash />}
