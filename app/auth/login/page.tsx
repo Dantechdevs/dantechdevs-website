@@ -132,6 +132,19 @@ export default function LoginPage() {
           </div>
 
           <div className="lr-form-header">
+            <div className="lr-fingerprint">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+                <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" />
+                <path d="M14 13.12c0 2.38 0 6.38-1 8.88" />
+                <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02" />
+                <path d="M2 12a10 10 0 0 1 18-6" />
+                <path d="M2 16h.01" />
+                <path d="M21.8 16c.2-2 .131-5.354 0-6" />
+                <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2" />
+                <path d="M8.65 22c.21-.66.45-1.32.57-2" />
+                <path d="M9 6.8a6 6 0 0 1 9 5.2v2" />
+              </svg>
+            </div>
             <h1 className="lr-title">Welcome back</h1>
             <p className="lr-subtitle">Sign in to access your dashboard</p>
           </div>
@@ -397,6 +410,19 @@ export default function LoginPage() {
         @media (min-width: 900px) { .lr-mobile-brand { display: none; } }
 
         .lr-form-header { margin-bottom: 28px; }
+        .lr-fingerprint {
+          width: 64px; height: 64px; border-radius: 18px;
+          background: rgba(232,50,90,0.1);
+          border: 1px solid rgba(232,50,90,0.2);
+          display: flex; align-items: center; justify-content: center;
+          color: ${R}; margin-bottom: 20px;
+          animation: fpPulse 3s ease-in-out infinite;
+          box-shadow: 0 0 0 0 rgba(232,50,90,0.3);
+        }
+        @keyframes fpPulse {
+          0%,100% { box-shadow: 0 0 0 0 rgba(232,50,90,0.25); }
+          50%      { box-shadow: 0 0 0 10px rgba(232,50,90,0); }
+        }
         .lr-title {
           font-family: 'Syne', sans-serif; font-size: 28px;
           font-weight: 800; color: #fff; letter-spacing: -0.5px; margin-bottom: 6px;
