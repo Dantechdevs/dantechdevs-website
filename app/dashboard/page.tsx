@@ -1403,7 +1403,7 @@ export default function Dashboard() {
         <div className={dark ? "db-root db-dark" : "db-root"}>
             <Sidebar view={view} setView={setView} dark={dark} setDark={setDark} />
 
-            <main style={{ flex: 1, overflowY: "auto", minWidth: 0, marginLeft: 248 }}>
+            <main style={{ flex: 1, overflowY: "auto", minWidth: 0, marginLeft: "248px" }}>
                 {/* Topbar */}
                 <div className="db-topbar">
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
