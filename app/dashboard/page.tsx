@@ -644,7 +644,7 @@ function AdminDash() {
                 </Panel>
                 <Panel title="Revenue Mix">
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
-                        <div style={{ position: "relative" }}>
+                        <div style={{ position: "relative", overflowY: "auto" }}>
                             <DonutChart size={124} segments={[{ value: 70, color: A.blue }, { value: 15, color: A.cyan }, { value: 10, color: A.emerald }, { value: 5, color: A.amber }]} />
                             <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
                                 <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text-primary)", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>KES</div>
@@ -1155,7 +1155,7 @@ function UserMenu({ dark, setDark, onClose }: { dark: boolean; setDark: React.Di
     return (
         <div style={{ position: "absolute", bottom: "calc(100% + 8px)", left: 0, right: 0, zIndex: 200, background: "var(--panel)", border: "1px solid var(--border-hi)", borderRadius: 14, boxShadow: "var(--shadow-xl)", overflow: "hidden", animation: "sbSlideUp 0.22s cubic-bezier(.4,0,.2,1)" }}>
             <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ width: 40, height: 40, borderRadius: "50%", background: `linear-gradient(135deg,${A.blue},${A.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, color: "#fff", flexShrink: 0, position: "relative" }}>
+                <div style={{ width: 40, height: 40, borderRadius: "50%", background: `linear-gradient(135deg,${A.blue},${A.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, color: "#fff", flexShrink: 0, position: "relative", overflowY: "auto" }}>
                     DN
                     <div style={{ position: "absolute", bottom: 0, right: 0, width: 10, height: 10, borderRadius: "50%", background: A.emerald, border: "2px solid var(--panel)" }} />
                 </div>
@@ -1253,7 +1253,15 @@ function Sidebar({ view, setView, dark, setDark }: {
     ];
 
     return (
-        <aside ref={sidebarRef} className="db-sidebar" style={{ position: "relative" }}>
+        <aside ref={sidebarRef} className="db-sidebar" style={{ position: "relative", overflowY: "auto" }}>
+            {/* Brand */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20, paddingBottom: 16, borderBottom: "1px solid var(--sidebar-border)" }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#2563EB,#0891B2)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, color: "#fff", flexShrink: 0 }}>D</div>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: 13, color: "var(--sidebar-brand)", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>Dantechdevs</div>
+                <div style={{ fontSize: 10, color: "var(--sidebar-tag)" }}>Code the Future</div>
+              </div>
+            </div>
             {/* Search bar */}
             <div style={{ position: "relative", marginBottom: 18 }}>
                 <button onClick={() => toggleFlyout("search")}
@@ -1330,7 +1338,7 @@ function Sidebar({ view, setView, dark, setDark }: {
             <div style={{ flex: 1 }} />
 
             {/* Bottom bar */}
-            <div style={{ paddingTop: 12, borderTop: "1px solid var(--sidebar-border)", display: "flex", alignItems: "center", gap: 6, position: "relative" }}>
+            <div style={{ paddingTop: 12, borderTop: "1px solid var(--sidebar-border)", display: "flex", alignItems: "center", gap: 6, position: "relative", overflowY: "auto" }}>
                 <button onClick={() => toggleFlyout("user")} style={{ display: "flex", alignItems: "center", gap: 9, flex: 1, background: "none", border: "none", cursor: "pointer", borderRadius: 10, padding: "6px 8px", transition: "background 0.18s", position: "relative", textAlign: "left" }}
                     onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "var(--sidebar-item-hover)"}
                     onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "none"}>
@@ -1345,8 +1353,8 @@ function Sidebar({ view, setView, dark, setDark }: {
                     <span style={{ fontSize: 11, color: "var(--sidebar-section)", transition: "transform 0.2s", transform: userOpen ? "rotate(180deg)" : "rotate(0deg)" }}>▾</span>
                 </button>
 
-                <div style={{ position: "relative" }}>
-                    <button onClick={() => toggleFlyout("notif")} style={{ width: 34, height: 34, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, background: notifOpen ? "var(--bg-muted)" : "none", border: `1px solid ${notifOpen ? "var(--border-hi)" : "transparent"}`, cursor: "pointer", transition: "all 0.18s", flexShrink: 0, position: "relative" }}>
+                <div style={{ position: "relative", overflowY: "auto" }}>
+                    <button onClick={() => toggleFlyout("notif")} style={{ width: 34, height: 34, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, background: notifOpen ? "var(--bg-muted)" : "none", border: `1px solid ${notifOpen ? "var(--border-hi)" : "transparent"}`, cursor: "pointer", transition: "all 0.18s", flexShrink: 0, position: "relative", overflowY: "auto" }}>
                         🔔
                         {unreadCount > 0 && (
                             <span style={{ position: "absolute", top: 4, right: 4, width: 16, height: 16, borderRadius: "50%", background: A.rose, fontSize: 9, fontWeight: 800, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid var(--sidebar-bg)" }}>{unreadCount}</span>
