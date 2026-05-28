@@ -93,6 +93,7 @@ export async function createProduct(
 export async function updateProduct(id: string, updates: Partial<ProductRow>) {
   const { data, error } = await supabase
     .from("products")
+    // @ts-ignore
     .update(updates as any)
     .eq("id", id)
     .select()
@@ -172,7 +173,7 @@ export async function createOrder(order: Omit<OrderRow, "id" | "created_at">) {
     });
 
     // Increment product sales counter via RPC defined in schema.sql
-    await supabase.rpc("increment_sales", { product_id: order.product_id });
+    await (supabase as any).rpc("increment_sales", { product_id: order.product_id });
   }
 
   return { data, error };
@@ -216,7 +217,7 @@ export async function getWishlist(buyerId: string): Promise<WishlistRow[]> {
 export async function addToWishlist(buyerId: string, productId: string) {
   const { error } = await supabase
     .from("wishlist")
-    .insert({/* @ts-ignore */  buyer_id: buyerId, product_id: productId });
+    .insert({buyer_id: buyerId, product_id: productId} as any);
   return { error };
 }
 
@@ -241,7 +242,7 @@ export async function getSellerRevenue(sellerId: string): Promise<number> {
     .eq("products.seller_id", sellerId)
     .eq("status", "completed");
 
-  return data?.reduce((sum, o) => sum + Number(o.amount), 0) ?? 0;
+  return data?.reduce((sum, o) => sum + Number((o as any).amount), 0) ?? 0;
 }
 
 /**
@@ -261,7 +262,7 @@ export async function getAdminStats() {
     supabase.from("users").select("id",       { count: "exact" }),
   ]);
 
-  const totalRevenue = orders.data?.reduce((sum, o) => sum + Number(o.amount), 0) ?? 0;
+  const totalRevenue = orders.data?.reduce((sum, o) => sum + Number((o as any).amount), 0) ?? 0;
 
   return {
     totalProducts: products.count ?? 0,
