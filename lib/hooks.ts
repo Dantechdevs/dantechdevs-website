@@ -12,7 +12,7 @@
  * ─────────────────────────────────────────────
  */
 
-import { supabase } from "./supabase";
+import { supabase } from "./supabase/client";
 import type { ProductRow, OrderRow, UserRow, WishlistRow } from "@/types/database";
 
 /* ══════════════════════════════════════════
