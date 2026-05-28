@@ -1155,7 +1155,7 @@ function UserMenu({ dark, setDark, onClose }: { dark: boolean; setDark: React.Di
     return (
         <div style={{ position: "absolute", bottom: "calc(100% + 8px)", left: 0, right: 0, zIndex: 200, background: "var(--panel)", border: "1px solid var(--border-hi)", borderRadius: 14, boxShadow: "var(--shadow-xl)", overflow: "hidden", animation: "sbSlideUp 0.22s cubic-bezier(.4,0,.2,1)" }}>
             <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ width: 40, height: 40, borderRadius: "50%", background: `linear-gradient(135deg,${A.blue},${A.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, color: "#fff", flexShrink: 0, position: "relative", overflowY: "auto" }}>
+                <div style={{ width: 40, height: 40, borderRadius: "50%", background: `linear-gradient(135deg,${A.blue},${A.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, color: "#fff", flexShrink: 0, position: "relative", overflow: "visible" }}>
                     DN
                     <div style={{ position: "absolute", bottom: 0, right: 0, width: 10, height: 10, borderRadius: "50%", background: A.emerald, border: "2px solid var(--panel)" }} />
                 </div>
@@ -1253,7 +1253,7 @@ function Sidebar({ view, setView, dark, setDark }: {
     ];
 
     return (
-        <aside ref={sidebarRef} className="db-sidebar" style={{ position: "relative", overflowY: "auto" }}>
+        <aside ref={sidebarRef} className="db-sidebar" style={{ overflowY: "auto" }}>
             {/* Brand */}
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20, paddingBottom: 16, borderBottom: "1px solid var(--sidebar-border)" }}>
               <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#2563EB,#0891B2)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, color: "#fff", flexShrink: 0 }}>D</div>
@@ -1343,7 +1343,7 @@ function Sidebar({ view, setView, dark, setDark }: {
                     onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "var(--sidebar-item-hover)"}
                     onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "none"}>
                     <div style={{ position: "relative", flexShrink: 0 }}>
-                        <div style={{ width: 34, height: 34, borderRadius: "50%", background: `linear-gradient(135deg,${A.blue},${A.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 12, color: "#fff" }}>DN</div>
+                        <div style={{ width: 34, height: 34, minWidth: 34, borderRadius: "50%", background: `linear-gradient(135deg,${A.blue},${A.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 12, color: "#fff" }}>DN</div>
                         <div style={{ position: "absolute", bottom: 0, right: 0, width: 9, height: 9, borderRadius: "50%", background: A.emerald, border: "2px solid var(--sidebar-bg)" }} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -1466,7 +1466,7 @@ export default function Dashboard() {
         *{box-sizing:border-box;margin:0;padding:0;}
         .db-root{display:flex;min-height:100vh;background:var(--bg);color:var(--text-primary);font-family:'Plus Jakarta Sans',sans-serif;position:relative;overflow:hidden;}
         .db-sidebar{width:248px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--sidebar-border);display:flex;flex-direction:column;padding:22px 12px 18px;position:fixed;top:0;left:0;height:100vh;margin-left:0;overflow-y:auto;overflow-x:visible;z-index:100;}
-        .db-topbar{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--panel);position:sticky;top:0;z-index:50;box-shadow:var(--shadow-sm);}
+        .db-topbar{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--panel);position:sticky;top:0;z-index:50;box-shadow:var(--shadow-sm);}
         .db-mobile-nav{display:none;}
         ::-webkit-scrollbar{width:4px;height:4px;}
         ::-webkit-scrollbar-track{background:transparent;}
@@ -1477,11 +1477,11 @@ export default function Dashboard() {
         @keyframes sbSlideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
         @keyframes sbSlideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
         @keyframes sbPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.85)}}
-        @media(max-width:768px){
+        @media(max-width:600px){
           .db-sidebar{display:none!important;}
           .db-mobile-nav{display:flex!important;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap;background:var(--panel);}
           .db-topbar{padding:12px 16px;}
-          main>div:last-child{padding:20px 16px!important;}
+          main>div:last-child{padding:20px 16px!important;}main{margin-left:0!important;}
         }
       `}</style>
         </div>
