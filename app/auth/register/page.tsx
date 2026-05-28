@@ -114,6 +114,7 @@ export default function RegisterPage() {
 
     const { error: profileError } = await supabase
       .from("users")
+      // @ts-ignore
       .update({
         name: form.name.trim(),
         phone: form.phone.trim() || null,
