@@ -570,7 +570,7 @@ function AdminDash() {
         if (!clientForm.business_name.trim()) { setClientError("Business name is required."); return; }
         if (!clientForm.email.trim()) { setClientError("Email is required."); return; }
         setClientSaving(true);
-        const { error } = await supabase.from("users").insert({
+        const { error } = await supabase.from("clients").insert({
             business_name: clientForm.business_name.trim(),
             email: clientForm.email.trim(),
             phone: clientForm.phone.trim() || null,
