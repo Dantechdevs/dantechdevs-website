@@ -1465,7 +1465,7 @@ export default function Dashboard() {
         }
         *{box-sizing:border-box;margin:0;padding:0;}
         .db-root{display:flex;min-height:100vh;background:var(--bg);color:var(--text-primary);font-family:'Plus Jakarta Sans',sans-serif;position:relative;}
-        .db-sidebar{width:248px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--sidebar-border);display:flex;flex-direction:column;padding:22px 12px 18px;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;overflow-x:visible;z-index:100;}
+        .db-sidebar{width:248px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--sidebar-border);display:flex;flex-direction:column;padding:22px 12px 18px;position:fixed;top:0;left:0;height:100vh;margin-left:0;overflow-y:auto;overflow-x:visible;z-index:100;}
         .db-topbar{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--panel);position:sticky;top:0;z-index:50;box-shadow:var(--shadow-sm);}
         .db-mobile-nav{display:none;}
         ::-webkit-scrollbar{width:4px;height:4px;}
