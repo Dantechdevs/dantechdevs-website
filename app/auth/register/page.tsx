@@ -9,6 +9,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 
 const R = "#e8325a";
@@ -78,9 +79,11 @@ function Field({
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const defaultRole = (searchParams.get("role") === "seller" ? "seller" : "buyer") as Role;
   const [form, setForm] = useState<FormState>({
     name: "", email: "", phone: "", password: "",
-    confirmPassword: "", role: "buyer", mpesa_number: "",
+    confirmPassword: "", role: defaultRole, mpesa_number: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
