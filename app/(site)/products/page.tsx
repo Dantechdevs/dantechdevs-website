@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 
 /* ─── TYPES ─── */
 type Badge = "new" | "hot" | "free" | null;
@@ -335,6 +336,7 @@ function StatsBar() {
 
 /* ─── SELL CTA BANNER ─── */
 function SellBanner() {
+    const router = useRouter();
     return (
         <div style={{
             background: "linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%)",
@@ -374,23 +376,35 @@ function SellBanner() {
                 </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, flexShrink: 0 }}>
-                <button style={{
-                    padding: "13px 28px", borderRadius: 12, fontSize: 14, fontWeight: 700,
-                    background: "linear-gradient(135deg, #E11D48, #F43F5E)",
-                    color: "#fff", border: "none", cursor: "pointer",
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    boxShadow: "0 4px 16px rgba(225,29,72,0.35)",
-                    whiteSpace: "nowrap",
-                }}>
+                {/* ✅ FIXED: now navigates to seller registration */}
+                <button
+                    onClick={() => router.push("/auth/register?role=seller")}
+                    style={{
+                        padding: "13px 28px", borderRadius: 12, fontSize: 14, fontWeight: 700,
+                        background: "linear-gradient(135deg, #E11D48, #F43F5E)",
+                        color: "#fff", border: "none", cursor: "pointer",
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                        boxShadow: "0 4px 16px rgba(225,29,72,0.35)",
+                        whiteSpace: "nowrap", transition: "all 0.2s",
+                    }}
+                    onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px)"}
+                    onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.transform = "none"}
+                >
                     Start Selling →
                 </button>
-                <button style={{
-                    padding: "10px 28px", borderRadius: 12, fontSize: 13, fontWeight: 600,
-                    background: "transparent", color: "#94A3B8",
-                    border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer",
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    whiteSpace: "nowrap",
-                }}>
+                {/* ✅ FIXED: now navigates to /sell info page */}
+                <button
+                    onClick={() => router.push("/sell")}
+                    style={{
+                        padding: "10px 28px", borderRadius: 12, fontSize: 13, fontWeight: 600,
+                        background: "transparent", color: "#94A3B8",
+                        border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer",
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                        whiteSpace: "nowrap", transition: "all 0.2s",
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#fff"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.3)"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "#94A3B8"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.12)"; }}
+                >
                     Learn more
                 </button>
             </div>
@@ -440,7 +454,7 @@ export default function ProductsPage() {
                 body { font-family: 'Plus Jakarta Sans', sans-serif; background: #F8FAFC; }
 
                 .p-search-wrap {
-                    display: flex; align-items: center; gap: 12;
+                    display: flex; align-items: center; gap: 12px;
                     background: #fff;
                     border: 2px solid #E2E8F0;
                     border-radius: 16px;
@@ -529,7 +543,7 @@ export default function ProductsPage() {
                             built for Kenya & Africa. Pay with M-Pesa.
                         </p>
 
-                        {/* ── BIG SEARCH (CodeDevStack-inspired) ── */}
+                        {/* ── BIG SEARCH ── */}
                         <div
                             className={`p-search-wrap${searchFocused ? " focused" : ""}`}
                             style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", border: "2px solid #E2E8F0", borderRadius: 16, padding: "14px 20px", maxWidth: 600, margin: "0 auto 32px" }}
@@ -622,7 +636,7 @@ export default function ProductsPage() {
                         </h2>
                     </div>
 
-                    {/* ── Category pills (horizontal scroll on mobile) ── */}
+                    {/* ── Category pills ── */}
                     <div className="p-cats" style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 6, marginBottom: 20 }}>
                         {CATEGORIES.map(cat => (
                             <CatPill key={cat} cat={cat} active={activeCat === cat} onClick={() => setActiveCat(cat)} />
