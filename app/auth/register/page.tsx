@@ -1,6 +1,6 @@
 /**
  * ─────────────────────────────────────────────
- * STAGE 4b — Register Page (Professional Redesign)
+ * STAGE 4b — Register Page (White + Brown Theme)
  * File: app/auth/register/page.tsx
  * ─────────────────────────────────────────────
  */
@@ -14,6 +14,7 @@ import { supabase } from "@/lib/supabase/client";
 
 const R = "#e8325a";
 const RD = "#c41e45";
+const BR = "#b46a28";
 
 type Role = "buyer" | "seller";
 
@@ -37,7 +38,6 @@ function PasswordStrength({ password }: { password: string }) {
   const score = checks.filter(Boolean).length;
   const labels = ["", "Weak", "Fair", "Good", "Strong"];
   const colors = ["", "#ef4444", "#f97316", "#eab308", "#22c55e"];
-
   if (!password) return null;
   return (
     <div style={{ marginTop: 6 }}>
@@ -45,7 +45,7 @@ function PasswordStrength({ password }: { password: string }) {
         {[1, 2, 3, 4].map(i => (
           <div key={i} style={{
             flex: 1, height: 3, borderRadius: 99,
-            background: i <= score ? colors[score] : "rgba(255,255,255,0.08)",
+            background: i <= score ? colors[score] : "rgba(160,110,55,0.12)",
             transition: "background 0.3s",
           }} />
         ))}
@@ -90,7 +90,7 @@ export default function RegisterPage() {
   const [showPass, setShowPass] = useState(false);
   const [showConf, setShowConf] = useState(false);
   const [focused, setFocused] = useState<string | null>(null);
-  const [step, setStep] = useState(1); // 1 = account info, 2 = security
+  const [step, setStep] = useState(1);
 
   const set = (k: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm(f => ({ ...f, [k]: e.target.value }));
@@ -98,34 +98,25 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     if (form.password !== form.confirmPassword) { setError("Passwords do not match."); return; }
     if (form.password.length < 6) { setError("Password must be at least 6 characters."); return; }
-
     setLoading(true);
-
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: form.email.trim(), password: form.password,
       options: { data: { name: form.name.trim() } },
     });
-
     if (signUpError || !data.user) {
       setError(signUpError?.message ?? "Registration failed.");
-      setLoading(false);
-      return;
+      setLoading(false); return;
     }
-
-    const { error: profileError } = await supabase
-      .from("users")
+    const { error: profileError } = await supabase.from("users")
       // @ts-ignore
       .update({
         name: form.name.trim(),
         phone: form.phone.trim() || null,
         role: form.role,
         mpesa_number: form.role === "seller" ? form.mpesa_number.trim() : null,
-      })
-      .eq("id", data.user.id);
-
+      }).eq("id", data.user.id);
     if (profileError) { setError(profileError.message); setLoading(false); return; }
     router.push("/dashboard");
   };
@@ -169,14 +160,20 @@ export default function RegisterPage() {
 
   return (
     <main className="rg-root">
+      {/* Background blobs */}
       <div className="rg-blob rg-blob--1" />
       <div className="rg-blob rg-blob--2" />
+      <div className="rg-blob rg-blob--3" />
+      {/* Grid overlay */}
+      <div className="rg-grid" />
+      {/* Top accent bar */}
+      <div className="rg-topbar" />
 
       <div className="rg-card">
         {/* Brand */}
         <div className="rg-brand">
           <div className="rg-brand__logo">
-            <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+            <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
               <rect width="40" height="40" rx="11" fill={R} />
               <path d="M10 13h10a8 8 0 010 14H10V13z" fill="#fff" opacity="0.95" />
               <rect x="23" y="20" width="7" height="7" rx="3" fill="#fff" opacity="0.5" />
@@ -188,9 +185,9 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        {/* Fingerprint + heading */}
+        {/* Fingerprint icon */}
         <div className="rg-fingerprint">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round">
             <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" />
             <path d="M14 13.12c0 2.38 0 6.38-1 8.88" />
             <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02" />
@@ -224,10 +221,8 @@ export default function RegisterPage() {
         </div>
 
         <form onSubmit={handleRegister} className="rg-form">
-
           {step === 1 && (
             <>
-              {/* Role toggle */}
               <div className="rg-role-wrap">
                 <p className="rg-role-label">I am joining as a</p>
                 <div className="rg-role-toggle">
@@ -236,16 +231,14 @@ export default function RegisterPage() {
                       className={`rg-role-btn ${form.role === r ? "rg-role-btn--active" : ""}`}
                       onClick={() => setForm(f => ({ ...f, role: r }))}>
                       <span className="rg-role-btn__icon">{r === "buyer" ? "👤" : "🛍️"}</span>
-                      <span className="rg-role-btn__label">
-                        {r === "buyer" ? "Buyer" : "Seller"}
-                      </span>
-                      <span className="rg-role-btn__desc">
-                        {r === "buyer" ? "Browse & purchase" : "List & earn"}
-                      </span>
+                      <span className="rg-role-btn__label">{r === "buyer" ? "Buyer" : "Seller"}</span>
+                      <span className="rg-role-btn__desc">{r === "buyer" ? "Browse & purchase" : "List & earn"}</span>
                     </button>
                   ))}
                 </div>
               </div>
+
+              <div className="rg-divider" />
 
               <Field label="Full Name" icon={iconUser}>
                 <div className={`rg-input-wrap ${focused === "name" ? "rg-input-wrap--on" : ""}`}>
@@ -286,7 +279,7 @@ export default function RegisterPage() {
                       onFocus={() => setFocused("mpesa")} onBlur={() => setFocused(null)}
                       required />
                   </div>
-                  <p className="rg-field-note">💚 Withdrawals processed via M-Pesa within 24hrs</p>
+                  <p className="rg-field-note">✅ Withdrawals processed via M-Pesa within 24hrs</p>
                 </Field>
               )}
 
@@ -335,10 +328,7 @@ export default function RegisterPage() {
                   </button>
                 </div>
                 {form.confirmPassword && (
-                  <p style={{
-                    fontSize: 11, marginTop: 5, fontWeight: 600,
-                    color: form.password === form.confirmPassword ? "#22c55e" : "#ef4444"
-                  }}>
+                  <p style={{ fontSize: 11, marginTop: 5, fontWeight: 600, color: form.password === form.confirmPassword ? "#22c55e" : "#ef4444" }}>
                     {form.password === form.confirmPassword ? "✓ Passwords match" : "✗ Passwords do not match"}
                   </p>
                 )}
@@ -367,10 +357,7 @@ export default function RegisterPage() {
                   Back
                 </button>
                 <button type="submit" className="rg-btn" disabled={loading} style={{ flex: 1 }}>
-                  {loading
-                    ? <><span className="rg-spinner" />Creating account…</>
-                    : <>Create Account 🚀</>
-                  }
+                  {loading ? <><span className="rg-spinner" />Creating account…</> : <>Create Account 🚀</>}
                 </button>
               </div>
 
@@ -400,149 +387,196 @@ export default function RegisterPage() {
       </div>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+        /* ══ ROOT / BACKGROUND ══ */
         .rg-root {
-          min-height: 100vh; display: flex; align-items: center; justify-content: center;
-          background: #07070d; font-family: 'DM Sans', sans-serif;
-          padding: 32px 20px; position: relative; overflow: hidden;
+          min-height: 100vh;
+          display: flex; align-items: center; justify-content: center;
+          font-family: 'DM Sans', sans-serif;
+          padding: 32px 20px;
+          position: relative; overflow: hidden;
+          background: linear-gradient(145deg, #fdf8f3 0%, #ffffff 40%, #fef6ee 70%, #fdf3e8 100%);
         }
+
+        /* Warm brown blobs */
         .rg-blob {
           position: absolute; border-radius: 50%;
-          filter: blur(90px); pointer-events: none; opacity: 0.15;
+          filter: blur(70px); pointer-events: none;
         }
-        .rg-blob--1 { width: 480px; height: 480px; background: ${R}; top: -140px; right: -120px; animation: blob 9s ease-in-out infinite; }
-        .rg-blob--2 { width: 380px; height: 380px; background: #3b4de8; bottom: -100px; left: -100px; animation: blob 11s ease-in-out infinite reverse; }
-        @keyframes blob { 0%,100%{transform:translate(0,0)scale(1)} 50%{transform:translate(20px,-20px)scale(1.06)} }
+        .rg-blob--1 {
+          width: 600px; height: 500px;
+          background: rgba(180,120,60,0.10);
+          top: -140px; right: -120px;
+          animation: blobFloat 12s ease-in-out infinite;
+        }
+        .rg-blob--2 {
+          width: 500px; height: 420px;
+          background: rgba(210,160,90,0.08);
+          bottom: -100px; left: -100px;
+          animation: blobFloat 15s ease-in-out infinite reverse;
+        }
+        .rg-blob--3 {
+          width: 350px; height: 300px;
+          background: rgba(232,50,90,0.055);
+          top: 40%; left: 55%;
+          animation: blobFloat 10s ease-in-out infinite 2s;
+        }
+        @keyframes blobFloat {
+          0%,100% { transform: translate(0,0) scale(1); }
+          50%      { transform: translate(20px,-20px) scale(1.05); }
+        }
 
+        /* Subtle dot grid */
+        .rg-grid {
+          position: absolute; inset: 0; pointer-events: none;
+          background-image:
+            linear-gradient(rgba(150,100,50,0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(150,100,50,0.04) 1px, transparent 1px);
+          background-size: 40px 40px;
+          mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+        }
+
+        /* Top accent bar */
+        .rg-topbar {
+          position: absolute; top: 0; left: 0; right: 0; height: 3px;
+          background: linear-gradient(90deg, transparent, rgba(180,110,40,0.4) 25%, ${BR} 50%, rgba(180,110,40,0.4) 75%, transparent);
+          z-index: 10;
+        }
+
+        /* ══ CARD ══ */
         .rg-card {
           width: 100%; max-width: 460px;
-          background: rgba(18,18,28,0.9);
-          border: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.88);
+          border: 1px solid rgba(180,120,60,0.14);
+          border-top: 2px solid rgba(180,110,40,0.28);
           border-radius: 24px; padding: 38px 36px;
-          position: relative; z-index: 1;
-          backdrop-filter: blur(20px);
-          box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 32px 80px rgba(0,0,0,0.7);
+          position: relative; z-index: 5;
+          backdrop-filter: blur(20px) saturate(1.3);
+          box-shadow:
+            0 2px 0 rgba(255,255,255,0.9) inset,
+            0 20px 60px rgba(140,90,30,0.12),
+            0 4px 16px rgba(140,90,30,0.06);
           animation: fadeUp 0.45s cubic-bezier(0.16,1,0.3,1) both;
         }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
 
         /* Brand */
-        .rg-brand { display: flex; align-items: center; gap: 11px; margin-bottom: 24px; }
-        .rg-brand__logo { filter: drop-shadow(0 4px 12px rgba(232,50,90,0.35)); flex-shrink: 0; }
-        .rg-brand__name { display: block; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 17px; color: ${R}; }
-        .rg-brand__tag  { display: block; font-size: 9px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.22); margin-top: 1px; }
+        .rg-brand { display:flex; align-items:center; gap:11px; margin-bottom:24px; }
+        .rg-brand__logo { filter: drop-shadow(0 4px 10px rgba(232,50,90,0.25)); flex-shrink:0; }
+        .rg-brand__name { display:block; font-family:'Syne',sans-serif; font-weight:800; font-size:17px; color:${R}; }
+        .rg-brand__tag  { display:block; font-size:9px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:rgba(140,90,40,0.4); margin-top:1px; }
 
         /* Fingerprint */
         .rg-fingerprint {
-          width: 58px; height: 58px; border-radius: 16px;
-          background: rgba(232,50,90,0.1); border: 1px solid rgba(232,50,90,0.2);
-          display: flex; align-items: center; justify-content: center;
-          color: ${R}; margin-bottom: 16px;
-          animation: fpPulse 3s ease-in-out infinite;
+          width:54px; height:54px; border-radius:15px;
+          background:rgba(180,106,40,0.08);
+          border:1.5px solid rgba(180,106,40,0.18);
+          display:flex; align-items:center; justify-content:center;
+          color:${BR}; margin-bottom:14px;
+          animation:fpPulse 3s ease-in-out infinite;
         }
         @keyframes fpPulse {
-          0%,100%{box-shadow:0 0 0 0 rgba(232,50,90,0.25)}
-          50%{box-shadow:0 0 0 10px rgba(232,50,90,0)}
+          0%,100%{box-shadow:0 0 0 0 rgba(180,106,40,0.2)}
+          50%{box-shadow:0 0 0 10px rgba(180,106,40,0)}
         }
 
-        .rg-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#fff; letter-spacing:-0.4px; margin-bottom:5px; }
-        .rg-sub   { font-size:13px; color:rgba(255,255,255,0.35); margin-bottom:22px; }
+        .rg-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#1a1008; letter-spacing:-0.4px; margin-bottom:5px; }
+        .rg-sub   { font-size:13px; color:rgba(100,70,30,0.45); margin-bottom:22px; }
 
         /* Steps */
-        .rg-steps { display:flex; align-items:center; gap:0; margin-bottom:24px; }
+        .rg-steps { display:flex; align-items:center; margin-bottom:22px; }
         .rg-step  { display:flex; align-items:center; gap:8px; flex:1; }
         .rg-step__num {
           width:26px; height:26px; border-radius:50%; flex-shrink:0;
           display:flex; align-items:center; justify-content:center;
           font-size:11px; font-weight:800; transition:all 0.3s;
-          border:1.5px solid rgba(255,255,255,0.1);
-          color:rgba(255,255,255,0.3); background:transparent;
+          border:1.5px solid rgba(180,120,60,0.2);
+          color:rgba(140,90,40,0.35); background:transparent;
         }
-        .rg-step--active .rg-step__num { border-color:${R}; color:${R}; background:rgba(232,50,90,0.1); }
+        .rg-step--active .rg-step__num { border-color:${R}; color:${R}; background:rgba(232,50,90,0.07); box-shadow:0 0 10px rgba(232,50,90,0.15); }
         .rg-step--done   .rg-step__num { border-color:${R}; color:#fff; background:${R}; }
-        .rg-step__label { font-size:12px; font-weight:600; color:rgba(255,255,255,0.25); transition:color 0.3s; white-space:nowrap; }
+        .rg-step__label { font-size:12px; font-weight:700; color:rgba(140,90,40,0.3); transition:color 0.3s; white-space:nowrap; letter-spacing:0.3px; }
         .rg-step--active .rg-step__label,
-        .rg-step--done   .rg-step__label { color:rgba(255,255,255,0.7); }
-        .rg-step__line { flex:1; height:1px; background:rgba(255,255,255,0.08); margin:0 8px; }
-        .rg-step--done .rg-step__line { background:rgba(232,50,90,0.3); }
+        .rg-step--done   .rg-step__label { color:rgba(80,50,20,0.6); }
+        .rg-step__line { flex:1; height:1px; background:rgba(180,120,60,0.12); margin:0 8px; }
+        .rg-step--done .rg-step__line { background:rgba(232,50,90,0.25); }
+
+        /* Divider */
+        .rg-divider { height:1px; background:rgba(180,120,60,0.1); margin:4px 0 14px; }
 
         /* Form */
         .rg-form  { display:flex; flex-direction:column; gap:14px; }
         .rg-field { display:flex; flex-direction:column; gap:6px; }
         .rg-label {
-          font-size:11px; font-weight:700; letter-spacing:0.7px;
-          text-transform:uppercase; color:rgba(255,255,255,0.35);
+          font-size:11px; font-weight:700; letter-spacing:0.6px;
+          text-transform:uppercase; color:rgba(120,80,35,0.45);
           display:flex; align-items:center; gap:6px;
         }
         .rg-label__icon { opacity:0.5; display:flex; }
-        .rg-label__hint {
-          font-size:10px; font-weight:500; text-transform:none; letter-spacing:0;
-          color:rgba(255,255,255,0.2); margin-left:2px;
-        }
+        .rg-label__hint { font-size:10px; font-weight:500; text-transform:none; letter-spacing:0; color:rgba(140,90,40,0.3); margin-left:2px; }
 
         /* Role toggle */
         .rg-role-wrap   { margin-bottom:2px; }
-        .rg-role-label  { font-size:12px; color:rgba(255,255,255,0.35); margin-bottom:8px; font-weight:500; }
+        .rg-role-label  { font-size:12px; color:rgba(100,65,25,0.45); margin-bottom:8px; font-weight:600; }
         .rg-role-toggle { display:flex; gap:10px; }
         .rg-role-btn {
-          flex:1; padding:12px 10px; border-radius:12px;
-          border:1.5px solid rgba(255,255,255,0.07);
-          background:rgba(255,255,255,0.03);
+          flex:1; padding:12px 10px; border-radius:13px;
+          border:1.5px solid rgba(180,120,60,0.15);
+          background:rgba(250,240,228,0.5);
           cursor:pointer; font-family:'DM Sans',sans-serif;
           transition:all 0.2s; text-align:center;
           display:flex; flex-direction:column; align-items:center; gap:4px;
         }
-        .rg-role-btn:hover { border-color:rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); }
-        .rg-role-btn--active { background:rgba(232,50,90,0.1); border-color:rgba(232,50,90,0.4); }
+        .rg-role-btn:hover { border-color:rgba(180,120,60,0.28); background:rgba(245,232,210,0.6); }
+        .rg-role-btn--active { background:rgba(232,50,90,0.06); border-color:rgba(232,50,90,0.35); box-shadow:0 0 14px rgba(232,50,90,0.08); }
         .rg-role-btn__icon  { font-size:20px; }
-        .rg-role-btn__label { font-size:13px; font-weight:700; color:rgba(255,255,255,0.5); transition:color 0.2s; }
+        .rg-role-btn__label { font-size:13px; font-weight:700; color:rgba(120,80,30,0.5); transition:color 0.2s; }
         .rg-role-btn--active .rg-role-btn__label { color:${R}; }
-        .rg-role-btn__desc  { font-size:10px; color:rgba(255,255,255,0.25); }
+        .rg-role-btn__desc  { font-size:10px; color:rgba(140,100,50,0.35); }
 
         /* Input */
         .rg-input-wrap {
           position:relative; display:flex; align-items:center;
-          border:1.5px solid rgba(255,255,255,0.08); border-radius:12px;
-          background:rgba(255,255,255,0.04); transition:all 0.2s;
+          border:1.5px solid rgba(180,120,60,0.16); border-radius:12px;
+          background:rgba(255,252,247,0.8); transition:all 0.2s;
         }
+        .rg-input-wrap:hover { border-color:rgba(180,120,60,0.28); }
         .rg-input-wrap--on {
-          border-color:${R}; background:rgba(232,50,90,0.06);
-          box-shadow:0 0 0 4px rgba(232,50,90,0.1);
+          border-color:${R}; background:#fff;
+          box-shadow:0 0 0 4px rgba(232,50,90,0.07);
         }
         .rg-input-icon {
-          position:absolute; left:14px; color:rgba(255,255,255,0.25);
-          display:flex; pointer-events:none; transition:color 0.2s;
-          flex-shrink:0;
+          position:absolute; left:14px; color:rgba(160,110,55,0.3);
+          display:flex; pointer-events:none; transition:color 0.2s; flex-shrink:0;
         }
         .rg-input-wrap--on .rg-input-icon { color:${R}; }
         .rg-input {
           width:100%; padding:12px 16px 12px 42px; border-radius:12px;
           border:none; background:transparent;
-          color:#fff; font-size:14px;
+          color:#1a1008; font-size:14px;
           font-family:'DM Sans',sans-serif; outline:none;
         }
         .rg-input--pass { padding-right:44px; }
-        .rg-input::placeholder { color:rgba(255,255,255,0.15); }
+        .rg-input::placeholder { color:rgba(160,110,55,0.3); }
         .rg-eye {
           position:absolute; right:13px; background:none; border:none; cursor:pointer;
-          color:rgba(255,255,255,0.25); padding:4px; display:flex; align-items:center;
+          color:rgba(160,110,55,0.3); padding:4px; display:flex; align-items:center;
           transition:color 0.2s;
         }
-        .rg-eye:hover { color:rgba(255,255,255,0.6); }
-
-        .rg-field-note { font-size:11px; color:rgba(255,255,255,0.3); margin-top:5px; }
+        .rg-eye:hover { color:rgba(100,60,20,0.6); }
+        .rg-field-note { font-size:11px; color:#16a34a; margin-top:5px; font-weight:600; }
 
         /* Error */
         .rg-error {
-          background:rgba(232,50,90,0.1); border:1px solid rgba(232,50,90,0.25);
+          background:rgba(232,50,90,0.07); border:1px solid rgba(232,50,90,0.2);
           border-radius:10px; padding:11px 14px; font-size:13px; color:${R};
           display:flex; align-items:center; gap:8px;
         }
 
         /* Terms */
-        .rg-terms { font-size:12px; color:rgba(255,255,255,0.25); line-height:1.6; text-align:center; }
+        .rg-terms { font-size:12px; color:rgba(120,80,40,0.4); line-height:1.6; text-align:center; }
 
         /* Buttons */
         .rg-btn {
@@ -551,38 +585,37 @@ export default function RegisterPage() {
           color:#fff; border:none; font-size:14px; font-weight:700;
           cursor:pointer; font-family:'DM Sans',sans-serif;
           display:flex; align-items:center; justify-content:center; gap:8px;
-          transition:all 0.2s; letter-spacing:0.2px;
-          box-shadow:0 4px 24px rgba(232,50,90,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+          transition:all 0.2s;
+          box-shadow:0 4px 20px rgba(232,50,90,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
           position:relative; overflow:hidden;
         }
-        .rg-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.1) 0%,transparent 60%); pointer-events:none; }
-        .rg-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 32px rgba(232,50,90,0.5); }
-        .rg-btn:disabled { opacity:0.55; cursor:not-allowed; }
+        .rg-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.12) 0%,transparent 60%); pointer-events:none; }
+        .rg-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 28px rgba(232,50,90,0.4); }
+        .rg-btn:disabled { opacity:0.5; cursor:not-allowed; }
 
         .rg-back-btn {
           padding:13px 16px; border-radius:12px;
-          border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04);
-          color:rgba(255,255,255,0.5); font-size:14px; font-weight:600;
+          border:1.5px solid rgba(180,120,60,0.2); background:rgba(250,240,228,0.6);
+          color:rgba(100,65,25,0.6); font-size:14px; font-weight:600;
           cursor:pointer; font-family:'DM Sans',sans-serif;
-          display:flex; align-items:center; gap:6px; transition:all 0.2s;
-          flex-shrink:0;
+          display:flex; align-items:center; gap:6px; transition:all 0.2s; flex-shrink:0;
         }
-        .rg-back-btn:hover { background:rgba(255,255,255,0.08); color:#fff; }
+        .rg-back-btn:hover { background:rgba(240,225,200,0.8); color:rgba(80,50,15,0.85); border-color:rgba(180,120,60,0.35); }
 
         .rg-spinner {
           width:15px; height:15px; border-radius:50%;
-          border:2px solid rgba(255,255,255,0.3); border-top-color:#fff;
+          border:2px solid rgba(255,255,255,0.4); border-top-color:#fff;
           animation:spin 0.7s linear infinite; display:inline-block;
         }
         @keyframes spin { to{transform:rotate(360deg)} }
 
         .rg-secure {
           display:flex; align-items:center; justify-content:center; gap:6px;
-          font-size:11px; color:rgba(255,255,255,0.18); font-weight:500; margin-top:2px;
+          font-size:11px; color:rgba(140,100,50,0.3); font-weight:500; margin-top:4px;
         }
 
-        .rg-footer { text-align:center; font-size:14px; color:rgba(255,255,255,0.3); margin-top:20px; }
-        .rg-link   { color:${R}; font-weight:600; text-decoration:none; }
+        .rg-footer { text-align:center; font-size:14px; color:rgba(120,80,40,0.4); margin-top:20px; }
+        .rg-link   { color:${R}; font-weight:700; text-decoration:none; }
         .rg-link:hover { text-decoration:underline; }
 
         @media(max-width:480px){
