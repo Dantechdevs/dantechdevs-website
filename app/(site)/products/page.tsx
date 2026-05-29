@@ -81,6 +81,8 @@ const PRODUCTS: Product[] = [
     { id: 28, title: "Tech Explainer Pack", cat: "Videos", price: 1800, rating: 4.5, sales: 67, badge: "new", description: "5 animated explainer video templates" },
 ];
 
+const FEATURED_IDS = [2, 23, 18, 25, 1, 24];
+
 /* ─── HELPERS ─── */
 function Stars({ rating }: { rating: number }) {
     return (
@@ -91,7 +93,7 @@ function Stars({ rating }: { rating: number }) {
     );
 }
 
-function Badge({ badge }: { badge: Badge }) {
+function BadgePill({ badge }: { badge: Badge }) {
     if (!badge) return null;
     const map: Record<NonNullable<Badge>, { bg: string; color: string }> = {
         new: { bg: "#DCFCE7", color: "#166534" },
@@ -103,14 +105,16 @@ function Badge({ badge }: { badge: Badge }) {
         <span style={{
             fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 999,
             background: s.bg, color: s.color, textTransform: "uppercase", letterSpacing: "0.5px",
-        }}>
-            {badge}
-        </span>
+        }}>{badge}</span>
     );
 }
 
 /* ─── PRODUCT CARD ─── */
-function ProductCard({ product }: { product: Product }) {
+function ProductCard({ product, wishlist, onWishlist }: {
+    product: Product;
+    wishlist: Set<number>;
+    onWishlist: (id: number) => void;
+}) {
     const [hov, setHov] = useState(false);
     const meta = CAT_META[product.cat as Exclude<Category, "All">];
 
@@ -121,16 +125,27 @@ function ProductCard({ product }: { product: Product }) {
             style={{
                 background: "#fff",
                 border: `1px solid ${hov ? meta.color + "50" : "#E2E8F0"}`,
-                borderRadius: 16,
-                overflow: "hidden",
-                cursor: "pointer",
+                borderRadius: 16, overflow: "hidden", cursor: "pointer",
                 transition: "all 0.2s",
                 transform: hov ? "translateY(-3px)" : "none",
                 boxShadow: hov ? `0 8px 24px ${meta.color}20` : "0 1px 3px rgba(0,0,0,0.06)",
-                display: "flex",
-                flexDirection: "column",
+                display: "flex", flexDirection: "column", position: "relative",
             }}
         >
+            {/* Wishlist */}
+            <button
+                onClick={(e) => { e.stopPropagation(); onWishlist(product.id); }}
+                style={{
+                    position: "absolute", top: 10, right: 10, zIndex: 10,
+                    width: 30, height: 30, borderRadius: "50%",
+                    background: "#fff", border: "1px solid #E2E8F0",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 15, cursor: "pointer", transition: "all 0.15s",
+                }}
+            >
+                {wishlist.has(product.id) ? "❤️" : "🤍"}
+            </button>
+
             {/* Thumbnail */}
             <div style={{
                 height: 120, background: meta.bg, display: "flex",
@@ -139,49 +154,27 @@ function ProductCard({ product }: { product: Product }) {
             }}>
                 {meta.emoji}
                 <div style={{ position: "absolute", top: 10, left: 10 }}>
-                    <Badge badge={product.badge} />
+                    <BadgePill badge={product.badge} />
                 </div>
-                {hov && (
-                    <div style={{
-                        position: "absolute", inset: 0, background: meta.color + "10",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        transition: "opacity 0.2s",
-                    }} />
-                )}
             </div>
 
             {/* Body */}
             <div style={{ padding: "14px 14px 12px", flex: 1, display: "flex", flexDirection: "column" }}>
-                <div style={{
-                    fontSize: 10, fontWeight: 700, textTransform: "uppercase",
-                    letterSpacing: "0.6px", color: meta.lightText, marginBottom: 5,
-                }}>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.6px", color: meta.lightText, marginBottom: 5 }}>
                     {product.cat}
                 </div>
-                <div style={{
-                    fontSize: 13, fontWeight: 700, color: "#0F172A",
-                    lineHeight: 1.35, marginBottom: 6, flex: 1,
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#0F172A", lineHeight: 1.35, marginBottom: 6, flex: 1, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                     {product.title}
                 </div>
                 <div style={{ fontSize: 11, color: "#64748B", marginBottom: 10, lineHeight: 1.4 }}>
                     {product.description}
                 </div>
-                <div style={{
-                    display: "flex", alignItems: "center", gap: 4, marginBottom: 10,
-                }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 10 }}>
                     <Stars rating={product.rating} />
-                    <span style={{ fontSize: 11, color: "#64748B" }}>
-                        {product.rating} · {product.sales.toLocaleString()} sales
-                    </span>
+                    <span style={{ fontSize: 11, color: "#64748B" }}>{product.rating} · {product.sales.toLocaleString()} sales</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <span style={{
-                        fontSize: 15, fontWeight: 800,
-                        color: product.price === 0 ? "#059669" : "#0F172A",
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    }}>
+                    <span style={{ fontSize: 15, fontWeight: 800, color: product.price === 0 ? "#059669" : "#0F172A", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                         {product.price === 0 ? "Free" : `KES ${product.price.toLocaleString()}`}
                     </span>
                     <button style={{
@@ -200,37 +193,208 @@ function ProductCard({ product }: { product: Product }) {
     );
 }
 
-/* ─── CATEGORY PILL ─── */
-function CatPill({
-    cat, active, onClick,
-}: {
-    cat: Category; active: boolean; onClick: () => void;
+/* ─── FEATURED CARD (larger) ─── */
+function FeaturedCard({ product, wishlist, onWishlist }: {
+    product: Product;
+    wishlist: Set<number>;
+    onWishlist: (id: number) => void;
 }) {
     const [hov, setHov] = useState(false);
-    const meta = cat !== "All" ? CAT_META[cat as Exclude<Category, "All">] : null;
+    const meta = CAT_META[product.cat as Exclude<Category, "All">];
 
+    return (
+        <div
+            onMouseEnter={() => setHov(true)}
+            onMouseLeave={() => setHov(false)}
+            style={{
+                background: "#fff",
+                border: `1px solid ${hov ? meta.color + "60" : "#E2E8F0"}`,
+                borderRadius: 20, overflow: "hidden", cursor: "pointer",
+                transition: "all 0.2s",
+                transform: hov ? "translateY(-4px)" : "none",
+                boxShadow: hov ? `0 12px 32px ${meta.color}25` : "0 2px 8px rgba(0,0,0,0.06)",
+                display: "flex", flexDirection: "column", position: "relative",
+            }}
+        >
+            {/* Featured ribbon */}
+            <div style={{
+                position: "absolute", top: 14, left: 14, zIndex: 10,
+                background: "linear-gradient(135deg, #E11D48, #F43F5E)",
+                color: "#fff", fontSize: 9, fontWeight: 800,
+                padding: "3px 10px", borderRadius: 999, letterSpacing: "0.8px",
+                textTransform: "uppercase",
+            }}>⭐ Featured</div>
+
+            {/* Wishlist */}
+            <button
+                onClick={(e) => { e.stopPropagation(); onWishlist(product.id); }}
+                style={{
+                    position: "absolute", top: 10, right: 10, zIndex: 10,
+                    width: 32, height: 32, borderRadius: "50%",
+                    background: "#fff", border: "1px solid #E2E8F0",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 16, cursor: "pointer",
+                }}
+            >
+                {wishlist.has(product.id) ? "❤️" : "🤍"}
+            </button>
+
+            {/* Thumbnail */}
+            <div style={{
+                height: 150, background: `linear-gradient(135deg, ${meta.bg}, ${meta.color}15)`,
+                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 52,
+            }}>
+                {meta.emoji}
+            </div>
+
+            {/* Body */}
+            <div style={{ padding: "16px", flex: 1, display: "flex", flexDirection: "column" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.6px", color: meta.lightText, marginBottom: 5 }}>
+                    {product.cat}
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: "#0F172A", lineHeight: 1.3, marginBottom: 6, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    {product.title}
+                </div>
+                <div style={{ fontSize: 11, color: "#64748B", marginBottom: 12, lineHeight: 1.4, flex: 1 }}>
+                    {product.description}
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 12 }}>
+                    <Stars rating={product.rating} />
+                    <span style={{ fontSize: 11, color: "#64748B" }}>{product.rating} · {product.sales.toLocaleString()} sales</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 17, fontWeight: 800, color: product.price === 0 ? "#059669" : "#0F172A", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                        {product.price === 0 ? "Free" : `KES ${product.price.toLocaleString()}`}
+                    </span>
+                    <button style={{
+                        fontSize: 12, fontWeight: 700, padding: "8px 18px", borderRadius: 10,
+                        background: hov ? meta.color : `${meta.color}12`,
+                        border: `1px solid ${meta.color}40`,
+                        color: hov ? "#fff" : meta.color,
+                        cursor: "pointer", transition: "all 0.15s",
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    }}>
+                        {product.price === 0 ? "Download" : "Buy now"}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/* ─── CATEGORY PILL ─── */
+function CatPill({ cat, active, onClick }: { cat: Category; active: boolean; onClick: () => void }) {
+    const [hov, setHov] = useState(false);
+    const meta = cat !== "All" ? CAT_META[cat as Exclude<Category, "All">] : null;
     return (
         <button
             onClick={onClick}
             onMouseEnter={() => setHov(true)}
             onMouseLeave={() => setHov(false)}
             style={{
-                padding: "7px 16px", borderRadius: 999, fontSize: 13, fontWeight: 600,
+                padding: "8px 18px", borderRadius: 999, fontSize: 13, fontWeight: 600,
                 cursor: "pointer", transition: "all 0.15s", whiteSpace: "nowrap",
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                border: active
-                    ? `1.5px solid ${meta?.color ?? "#E11D48"}`
-                    : `1px solid ${hov ? "#CBD5E1" : "#E2E8F0"}`,
-                background: active
-                    ? (meta?.bg ?? "#FEE2E2")
-                    : hov ? "#F8FAFC" : "#fff",
-                color: active
-                    ? (meta?.lightText ?? "#9F1239")
-                    : hov ? "#334155" : "#64748B",
+                fontFamily: "'Plus Jakarta Sans', sans-serif", flexShrink: 0,
+                border: active ? `1.5px solid ${meta?.color ?? "#E11D48"}` : `1px solid ${hov ? "#CBD5E1" : "#E2E8F0"}`,
+                background: active ? (meta?.bg ?? "#FEE2E2") : hov ? "#F8FAFC" : "#fff",
+                color: active ? (meta?.lightText ?? "#9F1239") : hov ? "#334155" : "#64748B",
             }}
         >
-            {cat !== "All" && meta ? `${meta.emoji} ${cat}` : cat}
+            {cat !== "All" && meta ? `${meta.emoji} ${cat}` : "🛍️ All"}
         </button>
+    );
+}
+
+/* ─── STATS BAR ─── */
+function StatsBar() {
+    const stats = [
+        { label: "Products", value: "28+" },
+        { label: "Happy Clients", value: "2.8K+" },
+        { label: "Categories", value: "9" },
+        { label: "Free Items", value: "4" },
+    ];
+    return (
+        <div style={{
+            display: "flex", gap: 0,
+            background: "#0F172A", borderRadius: 16,
+            overflow: "hidden", margin: "0 auto 0",
+            maxWidth: 600,
+        }}>
+            {stats.map((s, i) => (
+                <div key={i} style={{
+                    flex: 1, padding: "14px 8px", textAlign: "center",
+                    borderRight: i < stats.length - 1 ? "1px solid rgba(255,255,255,0.08)" : "none",
+                }}>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{s.value}</div>
+                    <div style={{ fontSize: 10, color: "#64748B", marginTop: 2, fontWeight: 500 }}>{s.label}</div>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+/* ─── SELL CTA BANNER ─── */
+function SellBanner() {
+    return (
+        <div style={{
+            background: "linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%)",
+            borderRadius: 20, padding: "32px 36px",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            gap: 24, flexWrap: "wrap",
+            border: "1px solid rgba(255,255,255,0.06)",
+            position: "relative", overflow: "hidden",
+        }}>
+            {/* Decorative glow */}
+            <div style={{
+                position: "absolute", top: -40, right: 80, width: 200, height: 200,
+                borderRadius: "50%", background: "#E11D48", opacity: 0.08, filter: "blur(60px)",
+                pointerEvents: "none",
+            }} />
+            <div style={{ position: "relative" }}>
+                <div style={{
+                    fontSize: 11, fontWeight: 700, textTransform: "uppercase",
+                    letterSpacing: "1.5px", color: "#E11D48", marginBottom: 10,
+                }}>
+                    🚀 For Developers & Creators
+                </div>
+                <h3 style={{
+                    fontSize: 22, fontWeight: 800, color: "#fff",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    letterSpacing: "-0.5px", margin: "0 0 8px", lineHeight: 1.2,
+                }}>
+                    Sell your work on Dantechdevs
+                </h3>
+                <p style={{ fontSize: 13, color: "#94A3B8", margin: 0, lineHeight: 1.6, maxWidth: 420 }}>
+                    List your software, themes, code, or digital products. Reach thousands of Kenyan businesses and get paid via M-Pesa instantly.
+                </p>
+                <div style={{ display: "flex", gap: 16, marginTop: 12, flexWrap: "wrap" }}>
+                    {["✅ M-Pesa payouts", "✅ Keep 80% revenue", "✅ Free to list"].map((item, i) => (
+                        <span key={i} style={{ fontSize: 12, color: "#CBD5E1", fontWeight: 600 }}>{item}</span>
+                    ))}
+                </div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, flexShrink: 0 }}>
+                <button style={{
+                    padding: "13px 28px", borderRadius: 12, fontSize: 14, fontWeight: 700,
+                    background: "linear-gradient(135deg, #E11D48, #F43F5E)",
+                    color: "#fff", border: "none", cursor: "pointer",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    boxShadow: "0 4px 16px rgba(225,29,72,0.35)",
+                    whiteSpace: "nowrap",
+                }}>
+                    Start Selling →
+                </button>
+                <button style={{
+                    padding: "10px 28px", borderRadius: 12, fontSize: 13, fontWeight: 600,
+                    background: "transparent", color: "#94A3B8",
+                    border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    whiteSpace: "nowrap",
+                }}>
+                    Learn more
+                </button>
+            </div>
+        </div>
     );
 }
 
@@ -240,6 +404,9 @@ export default function ProductsPage() {
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState<SortOption>("featured");
     const [wishlist, setWishlist] = useState<Set<number>>(new Set());
+    const [searchFocused, setSearchFocused] = useState(false);
+
+    const featured = PRODUCTS.filter(p => FEATURED_IDS.includes(p.id));
 
     const filtered = useMemo(() => {
         let items = PRODUCTS.filter((p) => {
@@ -248,143 +415,231 @@ export default function ProductsPage() {
             const matchQ = !q || p.title.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
             return matchCat && matchQ;
         });
-
         if (sort === "newest") items = [...items].sort((a, b) => (b.badge === "new" ? 1 : 0) - (a.badge === "new" ? 1 : 0));
         if (sort === "price-asc") items = [...items].sort((a, b) => a.price - b.price);
         if (sort === "price-desc") items = [...items].sort((a, b) => b.price - a.price);
         if (sort === "rating") items = [...items].sort((a, b) => b.rating - a.rating);
-
         return items;
     }, [activeCat, search, sort]);
 
     const toggleWishlist = (id: number) => {
-        setWishlist((prev) => {
+        setWishlist(prev => {
             const next = new Set(prev);
             next.has(id) ? next.delete(id) : next.add(id);
             return next;
         });
     };
 
+    const showFeatured = activeCat === "All" && !search;
+
     return (
         <>
             <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        * { box-sizing: border-box; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #F8FAFC; }
-        .products-search:focus { border-color: #E11D48 !important; box-shadow: 0 0 0 3px rgba(225,29,72,0.12) !important; outline: none; }
-        .products-select:focus { outline: none; }
-        @media (max-width: 640px) {
-          .products-hero-title { font-size: 24px !important; }
-          .products-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; }
-        }
-      `}</style>
+                @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+                * { box-sizing: border-box; }
+                body { font-family: 'Plus Jakarta Sans', sans-serif; background: #F8FAFC; }
+
+                .p-search-wrap {
+                    display: flex; align-items: center; gap: 12;
+                    background: #fff;
+                    border: 2px solid #E2E8F0;
+                    border-radius: 16px;
+                    padding: 14px 20px;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    transition: border-color 0.2s, box-shadow 0.2s;
+                }
+                .p-search-wrap.focused {
+                    border-color: #E11D48 !important;
+                    box-shadow: 0 0 0 4px rgba(225,29,72,0.10) !important;
+                }
+                .p-search-input {
+                    border: none; background: none; flex: 1;
+                    font-size: 16px; color: #0F172A; outline: none;
+                    font-family: 'Plus Jakarta Sans', sans-serif;
+                }
+                .p-search-input::placeholder { color: #94A3B8; }
+                .p-search-btn {
+                    padding: 9px 22px; border-radius: 10px; font-size: 14px;
+                    font-weight: 700; background: #E11D48; color: #fff;
+                    border: none; cursor: pointer;
+                    font-family: 'Plus Jakarta Sans', sans-serif;
+                    transition: background 0.15s;
+                    white-space: nowrap;
+                }
+                .p-search-btn:hover { background: #BE123C; }
+
+                .p-cats {
+                    display: flex; gap: 8px;
+                    overflow-x: auto; padding-bottom: 6px;
+                    scrollbar-width: none;
+                    -webkit-overflow-scrolling: touch;
+                }
+                .p-cats::-webkit-scrollbar { display: none; }
+
+                .p-select:focus { outline: none; }
+
+                @media (max-width: 640px) {
+                    .p-hero-title  { font-size: 26px !important; }
+                    .p-hero-sub    { font-size: 14px !important; }
+                    .p-grid        { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; }
+                    .p-feat-grid   { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important; }
+                    .p-search-wrap { padding: 10px 14px !important; border-radius: 12px !important; }
+                    .p-search-input { font-size: 14px !important; }
+                }
+            `}</style>
 
             <div style={{ minHeight: "100vh", background: "#F8FAFC" }}>
-                {/* Hero */}
+
+                {/* ══ HERO ══ */}
                 <div style={{
-                    background: "#fff", borderBottom: "1px solid #E2E8F0",
-                    padding: "52px 24px 36px",
+                    background: "linear-gradient(180deg, #fff 0%, #FFF1F2 60%, #F8FAFC 100%)",
+                    borderBottom: "1px solid #E2E8F0",
+                    padding: "60px 24px 48px",
                 }}>
                     <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
+
+                        {/* Label */}
                         <div style={{
-                            display: "inline-block", fontSize: 12, fontWeight: 700,
-                            textTransform: "uppercase", letterSpacing: "1.5px",
-                            color: "#E11D48", background: "#FFF1F2", border: "1px solid #FECDD3",
-                            borderRadius: 999, padding: "4px 14px", marginBottom: 16,
+                            display: "inline-flex", alignItems: "center", gap: 6,
+                            fontSize: 12, fontWeight: 700, textTransform: "uppercase",
+                            letterSpacing: "1.5px", color: "#E11D48",
+                            background: "#FFF1F2", border: "1px solid #FECDD3",
+                            borderRadius: 999, padding: "5px 14px", marginBottom: 20,
                         }}>
-                            Dantechdevs Marketplace
+                            <span>🛍️</span> Dantechdevs Marketplace
                         </div>
-                        <h1
-                            className="products-hero-title"
-                            style={{
-                                fontSize: 38, fontWeight: 800, color: "#0F172A",
-                                letterSpacing: "-1px", lineHeight: 1.15,
-                                fontFamily: "'Plus Jakarta Sans', sans-serif", margin: "0 0 12px",
-                            }}
-                        >
-                            All Products
-                        </h1>
-                        <p style={{
-                            fontSize: 15, color: "#64748B", maxWidth: 520,
-                            margin: "0 auto 28px", lineHeight: 1.6,
+
+                        {/* Title */}
+                        <h1 className="p-hero-title" style={{
+                            fontSize: 42, fontWeight: 800, color: "#0F172A",
+                            letterSpacing: "-1.5px", lineHeight: 1.1,
+                            fontFamily: "'Plus Jakarta Sans', sans-serif",
+                            margin: "0 0 16px",
                         }}>
-                            Software, themes, code, books, graphics and more — built for African businesses.
+                            Discover Premium Digital<br />
+                            <span style={{ color: "#E11D48" }}>Products for African Businesses</span>
+                        </h1>
+
+                        <p className="p-hero-sub" style={{
+                            fontSize: 16, color: "#64748B", maxWidth: 500,
+                            margin: "0 auto 32px", lineHeight: 1.7,
+                        }}>
+                            Software, themes, code, books, graphics and more —
+                            built for Kenya & Africa. Pay with M-Pesa.
                         </p>
 
-                        {/* Search */}
-                        <div style={{
-                            display: "flex", alignItems: "center", gap: 10,
-                            background: "#F8FAFC", border: "1.5px solid #E2E8F0",
-                            borderRadius: 12, padding: "10px 16px",
-                            maxWidth: 460, margin: "0 auto",
-                            transition: "border-color 0.2s",
-                        }}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round">
+                        {/* ── BIG SEARCH (CodeDevStack-inspired) ── */}
+                        <div
+                            className={`p-search-wrap${searchFocused ? " focused" : ""}`}
+                            style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", border: "2px solid #E2E8F0", borderRadius: 16, padding: "14px 20px", maxWidth: 600, margin: "0 auto 32px" }}
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0 }}>
                                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                             </svg>
                             <input
-                                className="products-search"
+                                className="p-search-input"
                                 value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Search products…"
-                                style={{
-                                    border: "none", background: "none", flex: 1,
-                                    fontSize: 14, color: "#0F172A",
-                                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                                }}
+                                onChange={e => setSearch(e.target.value)}
+                                onFocus={() => setSearchFocused(true)}
+                                onBlur={() => setSearchFocused(false)}
+                                placeholder="Search software, code, themes, books…"
+                                style={{ border: "none", background: "none", flex: 1, fontSize: 16, color: "#0F172A", outline: "none", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                             />
                             {search && (
-                                <button
-                                    onClick={() => setSearch("")}
-                                    style={{
-                                        background: "none", border: "none", cursor: "pointer",
-                                        color: "#94A3B8", fontSize: 16, lineHeight: 1, padding: 0,
-                                    }}
-                                >
-                                    ✕
-                                </button>
+                                <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#94A3B8", fontSize: 18, lineHeight: 1, padding: 0, flexShrink: 0 }}>✕</button>
                             )}
+                            <button className="p-search-btn">🔍 Search</button>
                         </div>
+
+                        {/* Quick search chips */}
+                        <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", marginBottom: 36 }}>
+                            {["M-Pesa", "Church System", "Next.js", "Logo Pack", "Free"].map(q => (
+                                <button key={q} onClick={() => setSearch(q)} style={{
+                                    padding: "5px 14px", borderRadius: 999, fontSize: 12, fontWeight: 600,
+                                    background: "#fff", border: "1px solid #E2E8F0", color: "#64748B",
+                                    cursor: "pointer", transition: "all 0.15s",
+                                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                }}
+                                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#E11D48"; (e.currentTarget as HTMLButtonElement).style.color = "#E11D48"; }}
+                                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#E2E8F0"; (e.currentTarget as HTMLButtonElement).style.color = "#64748B"; }}
+                                >
+                                    {q}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Stats */}
+                        <StatsBar />
                     </div>
                 </div>
 
-                <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 24px" }}>
-                    {/* Category pills */}
-                    <div style={{
-                        display: "flex", gap: 8, flexWrap: "wrap",
-                        marginBottom: 24, overflowX: "auto", paddingBottom: 4,
-                    }}>
-                        {CATEGORIES.map((cat) => (
-                            <CatPill
-                                key={cat}
-                                cat={cat}
-                                active={activeCat === cat}
-                                onClick={() => setActiveCat(cat)}
-                            />
+                <div style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 24px" }}>
+
+                    {/* ══ FEATURED SECTION ══ */}
+                    {showFeatured && (
+                        <div style={{ marginBottom: 48 }}>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+                                <div>
+                                    <h2 style={{ fontSize: 20, fontWeight: 800, color: "#0F172A", fontFamily: "'Plus Jakarta Sans', sans-serif", margin: "0 0 4px", letterSpacing: "-0.5px" }}>
+                                        ⭐ Featured Products
+                                    </h2>
+                                    <p style={{ fontSize: 13, color: "#64748B", margin: 0 }}>Hand-picked top sellers this month</p>
+                                </div>
+                                <button
+                                    onClick={() => setActiveCat("All")}
+                                    style={{
+                                        fontSize: 13, fontWeight: 600, padding: "7px 16px", borderRadius: 8,
+                                        border: "1px solid #E2E8F0", background: "#fff", color: "#64748B",
+                                        cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                    }}
+                                >
+                                    View all →
+                                </button>
+                            </div>
+                            <div
+                                className="p-feat-grid"
+                                style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 16 }}
+                            >
+                                {featured.map(p => (
+                                    <FeaturedCard key={p.id} product={p} wishlist={wishlist} onWishlist={toggleWishlist} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ══ SELL ON DANTECHDEVS BANNER ══ */}
+                    {showFeatured && (
+                        <div style={{ marginBottom: 48 }}>
+                            <SellBanner />
+                        </div>
+                    )}
+
+                    {/* ══ ALL PRODUCTS ══ */}
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+                        <h2 style={{ fontSize: 20, fontWeight: 800, color: "#0F172A", fontFamily: "'Plus Jakarta Sans', sans-serif", margin: 0, letterSpacing: "-0.5px" }}>
+                            {showFeatured ? "🛍️ All Products" : search ? `🔍 Results for "${search}"` : `${CAT_META[activeCat as Exclude<Category, "All">]?.emoji ?? "🛍️"} ${activeCat}`}
+                        </h2>
+                    </div>
+
+                    {/* ── Category pills (horizontal scroll on mobile) ── */}
+                    <div className="p-cats" style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 6, marginBottom: 20 }}>
+                        {CATEGORIES.map(cat => (
+                            <CatPill key={cat} cat={cat} active={activeCat === cat} onClick={() => setActiveCat(cat)} />
                         ))}
                     </div>
 
                     {/* Sort + count bar */}
-                    <div style={{
-                        display: "flex", alignItems: "center",
-                        justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 10,
-                    }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
                         <p style={{ fontSize: 13, color: "#64748B", margin: 0 }}>
                             <strong style={{ color: "#0F172A" }}>{filtered.length}</strong> product{filtered.length !== 1 ? "s" : ""} found
-                            {activeCat !== "All" && (
-                                <> in <strong style={{ color: "#0F172A" }}>{activeCat}</strong></>
-                            )}
+                            {activeCat !== "All" && <> in <strong style={{ color: "#0F172A" }}>{activeCat}</strong></>}
                         </p>
                         <select
-                            className="products-select"
+                            className="p-select"
                             value={sort}
-                            onChange={(e) => setSort(e.target.value as SortOption)}
-                            style={{
-                                fontSize: 13, fontWeight: 600, padding: "7px 12px",
-                                border: "1px solid #E2E8F0", borderRadius: 8,
-                                background: "#fff", color: "#0F172A", cursor: "pointer",
-                                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                            }}
+                            onChange={e => setSort(e.target.value as SortOption)}
+                            style={{ fontSize: 13, fontWeight: 600, padding: "7px 12px", border: "1px solid #E2E8F0", borderRadius: 8, background: "#fff", color: "#0F172A", cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                         >
                             <option value="featured">Featured</option>
                             <option value="newest">Newest first</option>
@@ -394,56 +649,34 @@ export default function ProductsPage() {
                         </select>
                     </div>
 
-                    {/* Grid */}
+                    {/* ── Product Grid ── */}
                     {filtered.length === 0 ? (
-                        <div style={{
-                            textAlign: "center", padding: "80px 24px",
-                            color: "#64748B", fontSize: 15,
-                        }}>
+                        <div style={{ textAlign: "center", padding: "80px 24px", color: "#64748B", fontSize: 15 }}>
                             <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
                             <p style={{ fontWeight: 700, color: "#0F172A", marginBottom: 6 }}>No products found</p>
                             <p>Try a different search or category.</p>
                             <button
                                 onClick={() => { setSearch(""); setActiveCat("All"); }}
-                                style={{
-                                    marginTop: 16, padding: "8px 20px", borderRadius: 8,
-                                    border: "1px solid #E2E8F0", background: "#fff",
-                                    fontSize: 13, fontWeight: 600, cursor: "pointer",
-                                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                                }}
+                                style={{ marginTop: 16, padding: "8px 20px", borderRadius: 8, border: "1px solid #E2E8F0", background: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                             >
                                 Clear filters
                             </button>
                         </div>
                     ) : (
                         <div
-                            className="products-grid"
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-                                gap: 16,
-                            }}
+                            className="p-grid"
+                            style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 16 }}
                         >
-                            {filtered.map((product) => (
-                                <div key={product.id} style={{ position: "relative" }}>
-                                    <button
-                                        onClick={() => toggleWishlist(product.id)}
-                                        style={{
-                                            position: "absolute", top: 10, right: 10, zIndex: 10,
-                                            width: 30, height: 30, borderRadius: "50%",
-                                            background: "#fff", border: "1px solid #E2E8F0",
-                                            display: "flex", alignItems: "center", justifyContent: "center",
-                                            fontSize: 15, cursor: "pointer", transition: "all 0.15s",
-                                        }}
-                                        title={wishlist.has(product.id) ? "Remove from wishlist" : "Add to wishlist"}
-                                    >
-                                        {wishlist.has(product.id) ? "❤️" : "🤍"}
-                                    </button>
-                                    <ProductCard product={product} />
-                                </div>
+                            {filtered.map(product => (
+                                <ProductCard key={product.id} product={product} wishlist={wishlist} onWishlist={toggleWishlist} />
                             ))}
                         </div>
                     )}
+
+                    {/* ══ BOTTOM SELL CTA ══ */}
+                    <div style={{ marginTop: 64 }}>
+                        <SellBanner />
+                    </div>
                 </div>
             </div>
         </>
