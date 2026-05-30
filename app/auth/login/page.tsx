@@ -284,7 +284,7 @@ export default function LoginPage() {
 
         /* Warm brown blobs */
         .lr-blob { position: absolute; border-radius: 50%; filter: blur(70px); pointer-events: none; }
-        .lr-bg-overlay { position:absolute; inset:0; background:rgba(255,255,255,0.55); backdrop-filter:blur(2px); z-index:0; } .lr-blob--1 {
+        .lr-blob--1 {
           width: 600px; height: 500px; background: rgba(180,120,60,0.10);
           top: -140px; right: -120px;
           animation: blobFloat 12s ease-in-out infinite;
