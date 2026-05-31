@@ -6,7 +6,7 @@
  */
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
@@ -77,7 +77,8 @@ function Field({
   );
 }
 
-export default function RegisterPage() {
+// ── Inner component that uses useSearchParams ──
+function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const defaultRole = (searchParams.get("role") === "seller" ? "seller" : "buyer") as Role;
@@ -159,6 +160,228 @@ export default function RegisterPage() {
   );
 
   return (
+    <>
+      {/* Brand */}
+      <div className="rg-brand">
+        <div className="rg-brand__logo">
+          <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
+            <rect width="40" height="40" rx="11" fill={R} />
+            <path d="M10 13h10a8 8 0 010 14H10V13z" fill="#fff" opacity="0.95" />
+            <rect x="23" y="20" width="7" height="7" rx="3" fill="#fff" opacity="0.5" />
+          </svg>
+        </div>
+        <div>
+          <span className="rg-brand__name">Dantechdevs</span>
+          <span className="rg-brand__tag">CODE THE FUTURE</span>
+        </div>
+      </div>
+
+      {/* Fingerprint icon */}
+      <div className="rg-fingerprint">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round">
+          <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" />
+          <path d="M14 13.12c0 2.38 0 6.38-1 8.88" />
+          <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02" />
+          <path d="M2 12a10 10 0 0 1 18-6" />
+          <path d="M2 16h.01" />
+          <path d="M21.8 16c.2-2 .131-5.354 0-6" />
+          <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2" />
+          <path d="M8.65 22c.21-.66.45-1.32.57-2" />
+          <path d="M9 6.8a6 6 0 0 1 9 5.2v2" />
+        </svg>
+      </div>
+
+      <h1 className="rg-title">Create account</h1>
+      <p className="rg-sub">Join the Kenyan digital marketplace</p>
+
+      {/* Progress steps */}
+      <div className="rg-steps">
+        {["Account Info", "Security"].map((s, i) => (
+          <div key={i} className={`rg-step ${step === i + 1 ? "rg-step--active" : step > i + 1 ? "rg-step--done" : ""}`}>
+            <div className="rg-step__num">
+              {step > i + 1 ? (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              ) : i + 1}
+            </div>
+            <span className="rg-step__label">{s}</span>
+            {i < 1 && <div className="rg-step__line" />}
+          </div>
+        ))}
+      </div>
+
+      <form onSubmit={handleRegister} className="rg-form">
+        {step === 1 && (
+          <>
+            <div className="rg-role-wrap">
+              <p className="rg-role-label">I am joining as a</p>
+              <div className="rg-role-toggle">
+                {(["buyer", "seller"] as Role[]).map(r => (
+                  <button key={r} type="button"
+                    className={`rg-role-btn ${form.role === r ? "rg-role-btn--active" : ""}`}
+                    onClick={() => setForm(f => ({ ...f, role: r }))}>
+                    <span className="rg-role-btn__icon">{r === "buyer" ? "👤" : "🛍️"}</span>
+                    <span className="rg-role-btn__label">{r === "buyer" ? "Buyer" : "Seller"}</span>
+                    <span className="rg-role-btn__desc">{r === "buyer" ? "Browse & purchase" : "List & earn"}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="rg-divider" />
+
+            <Field label="Full Name" icon={iconUser}>
+              <div className={`rg-input-wrap ${focused === "name" ? "rg-input-wrap--on" : ""}`}>
+                <span className="rg-input-icon">{iconUser}</span>
+                <input className="rg-input" type="text" placeholder="Daniel Kamau"
+                  value={form.name} onChange={set("name")}
+                  onFocus={() => setFocused("name")} onBlur={() => setFocused(null)}
+                  required autoComplete="name" />
+              </div>
+            </Field>
+
+            <Field label="Email Address" icon={iconEmail}>
+              <div className={`rg-input-wrap ${focused === "email" ? "rg-input-wrap--on" : ""}`}>
+                <span className="rg-input-icon">{iconEmail}</span>
+                <input className="rg-input" type="email" placeholder="you@email.com"
+                  value={form.email} onChange={set("email")}
+                  onFocus={() => setFocused("email")} onBlur={() => setFocused(null)}
+                  required autoComplete="email" />
+              </div>
+            </Field>
+
+            <Field label="Phone" icon={iconPhone} hint="optional">
+              <div className={`rg-input-wrap ${focused === "phone" ? "rg-input-wrap--on" : ""}`}>
+                <span className="rg-input-icon">{iconPhone}</span>
+                <input className="rg-input" type="tel" placeholder="+254 7XX XXX XXX"
+                  value={form.phone} onChange={set("phone")}
+                  onFocus={() => setFocused("phone")} onBlur={() => setFocused(null)}
+                  autoComplete="tel" />
+              </div>
+            </Field>
+
+            {form.role === "seller" && (
+              <Field label="M-Pesa Number" icon={iconMpesa} hint="for withdrawals">
+                <div className={`rg-input-wrap ${focused === "mpesa" ? "rg-input-wrap--on" : ""}`}>
+                  <span className="rg-input-icon">{iconMpesa}</span>
+                  <input className="rg-input" type="tel" placeholder="+254 7XX XXX XXX"
+                    value={form.mpesa_number} onChange={set("mpesa_number")}
+                    onFocus={() => setFocused("mpesa")} onBlur={() => setFocused(null)}
+                    required />
+                </div>
+                <p className="rg-field-note">✅ Withdrawals processed via M-Pesa within 24hrs</p>
+              </Field>
+            )}
+
+            <button type="button" className="rg-btn"
+              onClick={() => {
+                if (!form.name || !form.email) { setError("Please fill in your name and email."); return; }
+                setError(""); setStep(2);
+              }}>
+              Continue
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            <Field label="Password" icon={iconLock}>
+              <div className={`rg-input-wrap ${focused === "pass" ? "rg-input-wrap--on" : ""}`}>
+                <span className="rg-input-icon">{iconLock}</span>
+                <input className="rg-input rg-input--pass"
+                  type={showPass ? "text" : "password"}
+                  placeholder="Min 6 characters"
+                  value={form.password} onChange={set("password")}
+                  onFocus={() => setFocused("pass")} onBlur={() => setFocused(null)}
+                  required autoComplete="new-password" />
+                <button type="button" className="rg-eye" onClick={() => setShowPass(p => !p)} tabIndex={-1}>
+                  {showPass ? eyeOff : eyeOn}
+                </button>
+              </div>
+              <PasswordStrength password={form.password} />
+            </Field>
+
+            <Field label="Confirm Password" icon={iconLock}>
+              <div className={`rg-input-wrap ${focused === "conf" ? "rg-input-wrap--on" : ""}`}>
+                <span className="rg-input-icon">{iconLock}</span>
+                <input className="rg-input rg-input--pass"
+                  type={showConf ? "text" : "password"}
+                  placeholder="Re-enter your password"
+                  value={form.confirmPassword} onChange={set("confirmPassword")}
+                  onFocus={() => setFocused("conf")} onBlur={() => setFocused(null)}
+                  required autoComplete="new-password" />
+                <button type="button" className="rg-eye" onClick={() => setShowConf(p => !p)} tabIndex={-1}>
+                  {showConf ? eyeOff : eyeOn}
+                </button>
+              </div>
+              {form.confirmPassword && (
+                <p style={{ fontSize: 11, marginTop: 5, fontWeight: 600, color: form.password === form.confirmPassword ? "#22c55e" : "#ef4444" }}>
+                  {form.password === form.confirmPassword ? "✓ Passwords match" : "✗ Passwords do not match"}
+                </p>
+              )}
+            </Field>
+
+            {error && (
+              <div className="rg-error" role="alert">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                {error}
+              </div>
+            )}
+
+            <div className="rg-terms">
+              By creating an account, you agree to our{" "}
+              <Link href="/terms" className="rg-link">Terms</Link> and{" "}
+              <Link href="/privacy" className="rg-link">Privacy Policy</Link>.
+            </div>
+
+            <div style={{ display: "flex", gap: 10 }}>
+              <button type="button" className="rg-back-btn" onClick={() => setStep(1)}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                Back
+              </button>
+              <button type="submit" className="rg-btn" disabled={loading} style={{ flex: 1 }}>
+                {loading ? <><span className="rg-spinner" />Creating account…</> : <>Create Account 🚀</>}
+              </button>
+            </div>
+
+            <div className="rg-secure">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              256-bit SSL · Your data is encrypted and safe
+            </div>
+          </>
+        )}
+      </form>
+
+      {error && step === 1 && (
+        <div className="rg-error" style={{ marginTop: 12 }} role="alert">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          {error}
+        </div>
+      )}
+
+      <p className="rg-footer">
+        Already have an account?{" "}
+        <Link href="/auth/login" className="rg-link">Sign in →</Link>
+      </p>
+    </>
+  );
+}
+
+// ── Default export wraps RegisterForm in Suspense ──
+export default function RegisterPage() {
+  return (
     <main className="rg-root">
       {/* Background blobs */}
       <div className="rg-blob rg-blob--1" />
@@ -170,220 +393,13 @@ export default function RegisterPage() {
       <div className="rg-topbar" />
 
       <div className="rg-card">
-        {/* Brand */}
-        <div className="rg-brand">
-          <div className="rg-brand__logo">
-            <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
-              <rect width="40" height="40" rx="11" fill={R} />
-              <path d="M10 13h10a8 8 0 010 14H10V13z" fill="#fff" opacity="0.95" />
-              <rect x="23" y="20" width="7" height="7" rx="3" fill="#fff" opacity="0.5" />
-            </svg>
+        <Suspense fallback={
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "60px 0", color: "rgba(140,90,40,0.4)", fontSize: 14 }}>
+            Loading…
           </div>
-          <div>
-            <span className="rg-brand__name">Dantechdevs</span>
-            <span className="rg-brand__tag">CODE THE FUTURE</span>
-          </div>
-        </div>
-
-        {/* Fingerprint icon */}
-        <div className="rg-fingerprint">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round">
-            <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" />
-            <path d="M14 13.12c0 2.38 0 6.38-1 8.88" />
-            <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02" />
-            <path d="M2 12a10 10 0 0 1 18-6" />
-            <path d="M2 16h.01" />
-            <path d="M21.8 16c.2-2 .131-5.354 0-6" />
-            <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2" />
-            <path d="M8.65 22c.21-.66.45-1.32.57-2" />
-            <path d="M9 6.8a6 6 0 0 1 9 5.2v2" />
-          </svg>
-        </div>
-
-        <h1 className="rg-title">Create account</h1>
-        <p className="rg-sub">Join the Kenyan digital marketplace</p>
-
-        {/* Progress steps */}
-        <div className="rg-steps">
-          {["Account Info", "Security"].map((s, i) => (
-            <div key={i} className={`rg-step ${step === i + 1 ? "rg-step--active" : step > i + 1 ? "rg-step--done" : ""}`}>
-              <div className="rg-step__num">
-                {step > i + 1 ? (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                ) : i + 1}
-              </div>
-              <span className="rg-step__label">{s}</span>
-              {i < 1 && <div className="rg-step__line" />}
-            </div>
-          ))}
-        </div>
-
-        <form onSubmit={handleRegister} className="rg-form">
-          {step === 1 && (
-            <>
-              <div className="rg-role-wrap">
-                <p className="rg-role-label">I am joining as a</p>
-                <div className="rg-role-toggle">
-                  {(["buyer", "seller"] as Role[]).map(r => (
-                    <button key={r} type="button"
-                      className={`rg-role-btn ${form.role === r ? "rg-role-btn--active" : ""}`}
-                      onClick={() => setForm(f => ({ ...f, role: r }))}>
-                      <span className="rg-role-btn__icon">{r === "buyer" ? "👤" : "🛍️"}</span>
-                      <span className="rg-role-btn__label">{r === "buyer" ? "Buyer" : "Seller"}</span>
-                      <span className="rg-role-btn__desc">{r === "buyer" ? "Browse & purchase" : "List & earn"}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rg-divider" />
-
-              <Field label="Full Name" icon={iconUser}>
-                <div className={`rg-input-wrap ${focused === "name" ? "rg-input-wrap--on" : ""}`}>
-                  <span className="rg-input-icon">{iconUser}</span>
-                  <input className="rg-input" type="text" placeholder="Daniel Kamau"
-                    value={form.name} onChange={set("name")}
-                    onFocus={() => setFocused("name")} onBlur={() => setFocused(null)}
-                    required autoComplete="name" />
-                </div>
-              </Field>
-
-              <Field label="Email Address" icon={iconEmail}>
-                <div className={`rg-input-wrap ${focused === "email" ? "rg-input-wrap--on" : ""}`}>
-                  <span className="rg-input-icon">{iconEmail}</span>
-                  <input className="rg-input" type="email" placeholder="you@email.com"
-                    value={form.email} onChange={set("email")}
-                    onFocus={() => setFocused("email")} onBlur={() => setFocused(null)}
-                    required autoComplete="email" />
-                </div>
-              </Field>
-
-              <Field label="Phone" icon={iconPhone} hint="optional">
-                <div className={`rg-input-wrap ${focused === "phone" ? "rg-input-wrap--on" : ""}`}>
-                  <span className="rg-input-icon">{iconPhone}</span>
-                  <input className="rg-input" type="tel" placeholder="+254 7XX XXX XXX"
-                    value={form.phone} onChange={set("phone")}
-                    onFocus={() => setFocused("phone")} onBlur={() => setFocused(null)}
-                    autoComplete="tel" />
-                </div>
-              </Field>
-
-              {form.role === "seller" && (
-                <Field label="M-Pesa Number" icon={iconMpesa} hint="for withdrawals">
-                  <div className={`rg-input-wrap ${focused === "mpesa" ? "rg-input-wrap--on" : ""}`}>
-                    <span className="rg-input-icon">{iconMpesa}</span>
-                    <input className="rg-input" type="tel" placeholder="+254 7XX XXX XXX"
-                      value={form.mpesa_number} onChange={set("mpesa_number")}
-                      onFocus={() => setFocused("mpesa")} onBlur={() => setFocused(null)}
-                      required />
-                  </div>
-                  <p className="rg-field-note">✅ Withdrawals processed via M-Pesa within 24hrs</p>
-                </Field>
-              )}
-
-              <button type="button" className="rg-btn"
-                onClick={() => {
-                  if (!form.name || !form.email) { setError("Please fill in your name and email."); return; }
-                  setError(""); setStep(2);
-                }}>
-                Continue
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </button>
-            </>
-          )}
-
-          {step === 2 && (
-            <>
-              <Field label="Password" icon={iconLock}>
-                <div className={`rg-input-wrap ${focused === "pass" ? "rg-input-wrap--on" : ""}`}>
-                  <span className="rg-input-icon">{iconLock}</span>
-                  <input className="rg-input rg-input--pass"
-                    type={showPass ? "text" : "password"}
-                    placeholder="Min 6 characters"
-                    value={form.password} onChange={set("password")}
-                    onFocus={() => setFocused("pass")} onBlur={() => setFocused(null)}
-                    required autoComplete="new-password" />
-                  <button type="button" className="rg-eye" onClick={() => setShowPass(p => !p)} tabIndex={-1}>
-                    {showPass ? eyeOff : eyeOn}
-                  </button>
-                </div>
-                <PasswordStrength password={form.password} />
-              </Field>
-
-              <Field label="Confirm Password" icon={iconLock}>
-                <div className={`rg-input-wrap ${focused === "conf" ? "rg-input-wrap--on" : ""}`}>
-                  <span className="rg-input-icon">{iconLock}</span>
-                  <input className="rg-input rg-input--pass"
-                    type={showConf ? "text" : "password"}
-                    placeholder="Re-enter your password"
-                    value={form.confirmPassword} onChange={set("confirmPassword")}
-                    onFocus={() => setFocused("conf")} onBlur={() => setFocused(null)}
-                    required autoComplete="new-password" />
-                  <button type="button" className="rg-eye" onClick={() => setShowConf(p => !p)} tabIndex={-1}>
-                    {showConf ? eyeOff : eyeOn}
-                  </button>
-                </div>
-                {form.confirmPassword && (
-                  <p style={{ fontSize: 11, marginTop: 5, fontWeight: 600, color: form.password === form.confirmPassword ? "#22c55e" : "#ef4444" }}>
-                    {form.password === form.confirmPassword ? "✓ Passwords match" : "✗ Passwords do not match"}
-                  </p>
-                )}
-              </Field>
-
-              {error && (
-                <div className="rg-error" role="alert">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
-                  </svg>
-                  {error}
-                </div>
-              )}
-
-              <div className="rg-terms">
-                By creating an account, you agree to our{" "}
-                <Link href="/terms" className="rg-link">Terms</Link> and{" "}
-                <Link href="/privacy" className="rg-link">Privacy Policy</Link>.
-              </div>
-
-              <div style={{ display: "flex", gap: 10 }}>
-                <button type="button" className="rg-back-btn" onClick={() => setStep(1)}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <path d="M19 12H5M12 19l-7-7 7-7" />
-                  </svg>
-                  Back
-                </button>
-                <button type="submit" className="rg-btn" disabled={loading} style={{ flex: 1 }}>
-                  {loading ? <><span className="rg-spinner" />Creating account…</> : <>Create Account 🚀</>}
-                </button>
-              </div>
-
-              <div className="rg-secure">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-                256-bit SSL · Your data is encrypted and safe
-              </div>
-            </>
-          )}
-        </form>
-
-        {error && step === 1 && (
-          <div className="rg-error" style={{ marginTop: 12 }} role="alert">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            {error}
-          </div>
-        )}
-
-        <p className="rg-footer">
-          Already have an account?{" "}
-          <Link href="/auth/login" className="rg-link">Sign in →</Link>
-        </p>
+        }>
+          <RegisterForm />
+        </Suspense>
       </div>
 
       <style>{`
@@ -441,7 +457,7 @@ export default function RegisterPage() {
         /* Top accent bar */
         .rg-topbar {
           position: absolute; top: 0; left: 0; right: 0; height: 3px;
-          background: linear-gradient(90deg, transparent, rgba(180,110,40,0.4) 25%, ${BR} 50%, rgba(180,110,40,0.4) 75%, transparent);
+          background: linear-gradient(90deg, transparent, rgba(180,110,40,0.4) 25%, #b46a28 50%, rgba(180,110,40,0.4) 75%, transparent);
           z-index: 10;
         }
 
@@ -465,7 +481,7 @@ export default function RegisterPage() {
         /* Brand */
         .rg-brand { display:flex; align-items:center; gap:11px; margin-bottom:24px; }
         .rg-brand__logo { filter: drop-shadow(0 4px 10px rgba(232,50,90,0.25)); flex-shrink:0; }
-        .rg-brand__name { display:block; font-family:'Syne',sans-serif; font-weight:800; font-size:17px; color:${R}; }
+        .rg-brand__name { display:block; font-family:'Syne',sans-serif; font-weight:800; font-size:17px; color:#e8325a; }
         .rg-brand__tag  { display:block; font-size:9px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:rgba(140,90,40,0.4); margin-top:1px; }
 
         /* Fingerprint */
@@ -474,7 +490,7 @@ export default function RegisterPage() {
           background:rgba(180,106,40,0.08);
           border:1.5px solid rgba(180,106,40,0.18);
           display:flex; align-items:center; justify-content:center;
-          color:${BR}; margin-bottom:14px;
+          color:#b46a28; margin-bottom:14px;
           animation:fpPulse 3s ease-in-out infinite;
         }
         @keyframes fpPulse {
@@ -495,8 +511,8 @@ export default function RegisterPage() {
           border:1.5px solid rgba(180,120,60,0.2);
           color:rgba(140,90,40,0.35); background:transparent;
         }
-        .rg-step--active .rg-step__num { border-color:${R}; color:${R}; background:rgba(232,50,90,0.07); box-shadow:0 0 10px rgba(232,50,90,0.15); }
-        .rg-step--done   .rg-step__num { border-color:${R}; color:#fff; background:${R}; }
+        .rg-step--active .rg-step__num { border-color:#e8325a; color:#e8325a; background:rgba(232,50,90,0.07); box-shadow:0 0 10px rgba(232,50,90,0.15); }
+        .rg-step--done   .rg-step__num { border-color:#e8325a; color:#fff; background:#e8325a; }
         .rg-step__label { font-size:12px; font-weight:700; color:rgba(140,90,40,0.3); transition:color 0.3s; white-space:nowrap; letter-spacing:0.3px; }
         .rg-step--active .rg-step__label,
         .rg-step--done   .rg-step__label { color:rgba(80,50,20,0.6); }
@@ -533,7 +549,7 @@ export default function RegisterPage() {
         .rg-role-btn--active { background:rgba(232,50,90,0.06); border-color:rgba(232,50,90,0.35); box-shadow:0 0 14px rgba(232,50,90,0.08); }
         .rg-role-btn__icon  { font-size:20px; }
         .rg-role-btn__label { font-size:13px; font-weight:700; color:rgba(120,80,30,0.5); transition:color 0.2s; }
-        .rg-role-btn--active .rg-role-btn__label { color:${R}; }
+        .rg-role-btn--active .rg-role-btn__label { color:#e8325a; }
         .rg-role-btn__desc  { font-size:10px; color:rgba(140,100,50,0.35); }
 
         /* Input */
@@ -544,14 +560,14 @@ export default function RegisterPage() {
         }
         .rg-input-wrap:hover { border-color:rgba(180,120,60,0.28); }
         .rg-input-wrap--on {
-          border-color:${R}; background:#fff;
+          border-color:#e8325a; background:#fff;
           box-shadow:0 0 0 4px rgba(232,50,90,0.07);
         }
         .rg-input-icon {
           position:absolute; left:14px; color:rgba(160,110,55,0.3);
           display:flex; pointer-events:none; transition:color 0.2s; flex-shrink:0;
         }
-        .rg-input-wrap--on .rg-input-icon { color:${R}; }
+        .rg-input-wrap--on .rg-input-icon { color:#e8325a; }
         .rg-input {
           width:100%; padding:12px 16px 12px 42px; border-radius:12px;
           border:none; background:transparent;
@@ -571,7 +587,7 @@ export default function RegisterPage() {
         /* Error */
         .rg-error {
           background:rgba(232,50,90,0.07); border:1px solid rgba(232,50,90,0.2);
-          border-radius:10px; padding:11px 14px; font-size:13px; color:${R};
+          border-radius:10px; padding:11px 14px; font-size:13px; color:#e8325a;
           display:flex; align-items:center; gap:8px;
         }
 
@@ -581,7 +597,7 @@ export default function RegisterPage() {
         /* Buttons */
         .rg-btn {
           padding:13px 20px; border-radius:12px;
-          background:linear-gradient(135deg,${R} 0%,${RD} 100%);
+          background:linear-gradient(135deg,#e8325a 0%,#c41e45 100%);
           color:#fff; border:none; font-size:14px; font-weight:700;
           cursor:pointer; font-family:'DM Sans',sans-serif;
           display:flex; align-items:center; justify-content:center; gap:8px;
@@ -615,7 +631,7 @@ export default function RegisterPage() {
         }
 
         .rg-footer { text-align:center; font-size:14px; color:rgba(120,80,40,0.4); margin-top:20px; }
-        .rg-link   { color:${R}; font-weight:700; text-decoration:none; }
+        .rg-link   { color:#e8325a; font-weight:700; text-decoration:none; }
         .rg-link:hover { text-decoration:underline; }
 
         @media(max-width:480px){
