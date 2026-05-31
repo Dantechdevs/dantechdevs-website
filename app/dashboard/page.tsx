@@ -755,11 +755,6 @@ function AdminDash() {
                 </Panel>
             )}
 
-            {/* ════════════════════════════════
-          ADD PRODUCT MODAL
-          → uploads files to Storage
-          → inserts into `platform_products`
-      ════════════════════════════════ */}
             {productModal && (
                 <Modal title="📦 Add New Product" sub="Register a new product on the platform" onClose={() => !productSaving && setProductModal(false)}>
                     {productSuccess ? (
@@ -772,53 +767,20 @@ function AdminDash() {
                                 <Input label="Monthly Price (KES)" placeholder="3000" type="number" min="0" value={productForm.monthly_price} onChange={pf("monthly_price")} />
                                 <Input label="One-Time Price (KES)" placeholder="50000" type="number" min="0" value={productForm.one_time_price} onChange={pf("one_time_price")} />
                             </div>
-
-                            {/* Divider */}
                             <div style={{ borderTop: "1px solid var(--border)", margin: "4px 0" }} />
                             <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "1px" }}>Files & Media</div>
-
-                            <FileField
-                                label="🖼️ Product Image *"
-                                accept="image/*"
-                                file={productForm.image}
-                                onChange={pfile("image")}
-                            />
-                            <FileField
-                                label="🎥 Demo Video (optional)"
-                                accept="video/*"
-                                file={productForm.video}
-                                onChange={pfile("video")}
-                            />
-                            <FileField
-                                label="📄 PDF Brochure (optional)"
-                                accept=".pdf"
-                                file={productForm.pdf}
-                                onChange={pfile("pdf")}
-                            />
-                            <FileField
-                                label="💾 Software / Installer (optional)"
-                                accept=".exe,.apk,.zip,.dmg,.msi"
-                                file={productForm.software}
-                                onChange={pfile("software")}
-                            />
-
-                            {/* Upload progress */}
+                            <FileField label="🖼️ Product Image *" accept="image/*" file={productForm.image} onChange={pfile("image")} />
+                            <FileField label="🎥 Demo Video (optional)" accept="video/*" file={productForm.video} onChange={pfile("video")} />
+                            <FileField label="📄 PDF Brochure (optional)" accept=".pdf" file={productForm.pdf} onChange={pfile("pdf")} />
+                            <FileField label="💾 Software / Installer (optional)" accept=".exe,.apk,.zip,.dmg,.msi" file={productForm.software} onChange={pfile("software")} />
                             {uploadProgress && (
-                                <div style={{
-                                    fontSize: 12, color: A.blue, background: `${A.blue}10`,
-                                    border: `1px solid ${A.blue}25`, borderRadius: 8, padding: "9px 13px",
-                                    display: "flex", alignItems: "center", gap: 8
-                                }}>
+                                <div style={{ fontSize: 12, color: A.blue, background: `${A.blue}10`, border: `1px solid ${A.blue}25`, borderRadius: 8, padding: "9px 13px", display: "flex", alignItems: "center", gap: 8 }}>
                                     <span style={{ animation: "sbPulse 1s infinite" }}>⏳</span> {uploadProgress}
                                 </div>
                             )}
-
                             {productError && <InlineAlert msg={productError} color={A.rose} />}
-
                             <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
-                                <Btn onClick={saveProduct}>
-                                    {productSaving ? "⏳ Uploading…" : "💾 Save Product"}
-                                </Btn>
+                                <Btn onClick={saveProduct}>{productSaving ? "⏳ Uploading…" : "💾 Save Product"}</Btn>
                                 <Btn variant="outline" onClick={() => !productSaving && setProductModal(false)}>Cancel</Btn>
                             </div>
                         </>
@@ -826,10 +788,6 @@ function AdminDash() {
                 </Modal>
             )}
 
-            {/* ════════════════════════════════
-          NEW CLIENT MODAL
-          → inserts into `users` table
-      ════════════════════════════════ */}
             {clientModal && (
                 <Modal title="👥 New Client" sub="Onboard a new client to the platform" onClose={() => setClientModal(false)}>
                     {clientSuccess ? (
@@ -842,19 +800,12 @@ function AdminDash() {
                                 <Input label="Phone" placeholder="+254 7XX XXX XXX" type="tel" value={clientForm.phone} onChange={cf("phone")} />
                             </div>
                             <FSelect label="Product" value={clientForm.product} onChange={cf("product")}>
-                                {["BeautyPro", "ShopFlow", "ChurchDesk", "EduCore", "MediTrack", "SaccoSmart"].map(p =>
-                                    <option key={p}>{p}</option>
-                                )}
+                                {["BeautyPro", "ShopFlow", "ChurchDesk", "EduCore", "MediTrack", "SaccoSmart"].map(p => <option key={p}>{p}</option>)}
                             </FSelect>
                             <FSelect label="Plan" value={clientForm.plan} onChange={cf("plan")}>
-                                <option>Monthly</option>
-                                <option>Annual</option>
-                                <option>One-Time</option>
-                                <option>Trial</option>
+                                <option>Monthly</option><option>Annual</option><option>One-Time</option><option>Trial</option>
                             </FSelect>
-
                             {clientError && <InlineAlert msg={clientError} color={A.rose} />}
-
                             <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
                                 <Btn onClick={saveClient}>{clientSaving ? "⏳ Saving…" : "✅ Add Client"}</Btn>
                                 <Btn variant="outline" onClick={() => setClientModal(false)}>Cancel</Btn>
@@ -863,7 +814,6 @@ function AdminDash() {
                     )}
                 </Modal>
             )}
-
         </div>
     );
 }
@@ -1150,12 +1100,12 @@ function SearchOverlay({ onClose, onView }: { onClose: () => void; onView: (v: s
     );
 }
 
-/* ── User menu ── */
+/* ── User menu — now opens downward from topbar ── */
 function UserMenu({ dark, setDark, onClose }: { dark: boolean; setDark: React.Dispatch<React.SetStateAction<boolean>>; onClose: () => void }) {
     return (
-        <div style={{ position: "absolute", bottom: "calc(100% + 8px)", left: 0, right: 0, zIndex: 200, background: "var(--panel)", border: "1px solid var(--border-hi)", borderRadius: 14, boxShadow: "var(--shadow-xl)", overflow: "hidden", animation: "sbSlideUp 0.22s cubic-bezier(.4,0,.2,1)" }}>
+        <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 200, width: 260, background: "var(--panel)", border: "1px solid var(--border-hi)", borderRadius: 14, boxShadow: "var(--shadow-xl)", overflow: "hidden", animation: "sbSlideUp 0.22s cubic-bezier(.4,0,.2,1)" }}>
             <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ width: 40, height: 40, borderRadius: "50%", background: `linear-gradient(135deg,${A.blue},${A.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, color: "#fff", flexShrink: 0, position: "relative", overflow: "visible" }}>
+                <div style={{ width: 40, height: 40, borderRadius: "50%", background: `linear-gradient(135deg,${A.blue},${A.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, color: "#fff", flexShrink: 0, position: "relative" }}>
                     DN
                     <div style={{ position: "absolute", bottom: 0, right: 0, width: 10, height: 10, borderRadius: "50%", background: A.emerald, border: "2px solid var(--panel)" }} />
                 </div>
@@ -1203,14 +1153,13 @@ function Sidebar({ view, setView, dark, setDark }: {
 }) {
     const [notifOpen, setNotifOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
-    const [userOpen, setUserOpen] = useState(false);
     const unreadCount = NOTIFS.filter(n => n.unread).length;
     const sidebarRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
             if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) {
-                setNotifOpen(false); setSearchOpen(false); setUserOpen(false);
+                setNotifOpen(false); setSearchOpen(false);
             }
         };
         document.addEventListener("mousedown", handler);
@@ -1219,8 +1168,8 @@ function Sidebar({ view, setView, dark, setDark }: {
 
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); setSearchOpen(p => !p); setNotifOpen(false); setUserOpen(false); }
-            if (e.key === "Escape") { setSearchOpen(false); setNotifOpen(false); setUserOpen(false); }
+            if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); setSearchOpen(p => !p); setNotifOpen(false); }
+            if (e.key === "Escape") { setSearchOpen(false); setNotifOpen(false); }
         };
         window.addEventListener("keydown", handler);
         return () => window.removeEventListener("keydown", handler);
@@ -1229,7 +1178,6 @@ function Sidebar({ view, setView, dark, setDark }: {
     const toggleFlyout = (name: string) => {
         setNotifOpen(name === "notif" ? p => !p : false);
         setSearchOpen(name === "search" ? p => !p : false);
-        setUserOpen(name === "user" ? p => !p : false);
     };
 
     const VIEWS = [
@@ -1256,11 +1204,11 @@ function Sidebar({ view, setView, dark, setDark }: {
         <aside ref={sidebarRef} className="db-sidebar" style={{ overflowY: "auto" }}>
             {/* Brand */}
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20, paddingBottom: 16, borderBottom: "1px solid var(--sidebar-border)" }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#2563EB,#0891B2)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, color: "#fff", flexShrink: 0 }}>D</div>
-              <div>
-                <div style={{ fontWeight: 800, fontSize: 13, color: "var(--sidebar-brand)", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>Dantechdevs</div>
-                <div style={{ fontSize: 10, color: "var(--sidebar-tag)" }}>Code the Future</div>
-              </div>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#2563EB,#0891B2)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, color: "#fff", flexShrink: 0 }}>D</div>
+                <div>
+                    <div style={{ fontWeight: 800, fontSize: 13, color: "var(--sidebar-brand)", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>Dantechdevs</div>
+                    <div style={{ fontSize: 10, color: "var(--sidebar-tag)" }}>Code the Future</div>
+                </div>
             </div>
             {/* Search bar */}
             <div style={{ position: "relative", marginBottom: 18 }}>
@@ -1337,29 +1285,18 @@ function Sidebar({ view, setView, dark, setDark }: {
 
             <div style={{ flex: 1 }} />
 
-            {/* Bottom bar */}
-            <div style={{ paddingTop: 12, borderTop: "1px solid var(--sidebar-border)", display: "flex", alignItems: "center", gap: 6, position: "relative", overflowY: "auto" }}>
-                <button onClick={() => toggleFlyout("user")} style={{ display: "flex", alignItems: "center", gap: 9, flex: 1, background: "none", border: "none", cursor: "pointer", borderRadius: 10, padding: "6px 8px", transition: "background 0.18s", position: "relative", textAlign: "left" }}
-                    onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "var(--sidebar-item-hover)"}
-                    onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "none"}>
-                    <div style={{ position: "relative", flexShrink: 0 }}>
-                        <div style={{ width: 34, height: 34, minWidth: 34, borderRadius: "50%", background: `linear-gradient(135deg,${A.blue},${A.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 12, color: "#fff" }}>DN</div>
-                        <div style={{ position: "absolute", bottom: 0, right: 0, width: 9, height: 9, borderRadius: "50%", background: A.emerald, border: "2px solid var(--sidebar-bg)" }} />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--sidebar-brand)", fontFamily: "'Plus Jakarta Sans',sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Daniel Ngwasi</div>
-                        <div style={{ fontSize: 10, color: "var(--sidebar-tag)" }}>Admin · Business</div>
-                    </div>
-                    <span style={{ fontSize: 11, color: "var(--sidebar-section)", transition: "transform 0.2s", transform: userOpen ? "rotate(180deg)" : "rotate(0deg)" }}>▾</span>
-                </button>
-
-                <div style={{ position: "relative", overflowY: "auto" }}>
-                    <button onClick={() => toggleFlyout("notif")} style={{ width: 34, height: 34, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, background: notifOpen ? "var(--bg-muted)" : "none", border: `1px solid ${notifOpen ? "var(--border-hi)" : "transparent"}`, cursor: "pointer", transition: "all 0.18s", flexShrink: 0, position: "relative", overflowY: "auto" }}>
+            {/* ── Sidebar bottom: notifications + dark mode only ── */}
+            <div style={{ paddingTop: 12, borderTop: "1px solid var(--sidebar-border)", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6, position: "relative" }}>
+                <div style={{ position: "relative" }}>
+                    <button onClick={() => toggleFlyout("notif")} style={{ width: 34, height: 34, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, background: notifOpen ? "var(--bg-muted)" : "none", border: `1px solid ${notifOpen ? "var(--border-hi)" : "transparent"}`, cursor: "pointer", transition: "all 0.18s", flexShrink: 0, position: "relative" }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--sidebar-item-hover)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--sidebar-border)"; }}
+                        onMouseLeave={e => { if (!notifOpen) { (e.currentTarget as HTMLButtonElement).style.background = "none"; (e.currentTarget as HTMLButtonElement).style.borderColor = "transparent"; } }}>
                         🔔
                         {unreadCount > 0 && (
                             <span style={{ position: "absolute", top: 4, right: 4, width: 16, height: 16, borderRadius: "50%", background: A.rose, fontSize: 9, fontWeight: 800, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid var(--sidebar-bg)" }}>{unreadCount}</span>
                         )}
                     </button>
+                    {notifOpen && <NotifFlyout notifs={NOTIFS} onClose={() => setNotifOpen(false)} dark={dark} />}
                 </div>
 
                 <button onClick={() => setDark(d => !d)} title={dark ? "Light mode" : "Dark mode"}
@@ -1368,9 +1305,6 @@ function Sidebar({ view, setView, dark, setDark }: {
                     onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "none"; (e.currentTarget as HTMLButtonElement).style.borderColor = "transparent"; }}>
                     {dark ? "☀️" : "🌙"}
                 </button>
-
-                {notifOpen && <NotifFlyout notifs={NOTIFS} onClose={() => setNotifOpen(false)} dark={dark} />}
-                {userOpen && <UserMenu dark={dark} setDark={setDark} onClose={() => setUserOpen(false)} />}
             </div>
         </aside>
     );
@@ -1388,6 +1322,8 @@ const VIEWS_LIST = [
 export default function Dashboard() {
     const [view, setView] = useState("admin");
     const [dark, setDark] = useState(false);
+    const [userOpen, setUserOpen] = useState(false);
+    const topbarRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -1395,6 +1331,16 @@ export default function Dashboard() {
         const h = (e: MediaQueryListEvent) => setDark(e.matches);
         mq.addEventListener("change", h);
         return () => mq.removeEventListener("change", h);
+    }, []);
+
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (topbarRef.current && !topbarRef.current.contains(e.target as Node)) {
+                setUserOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
     }, []);
 
     const cv = VIEWS_LIST.find(v => v.key === view)!;
@@ -1405,7 +1351,7 @@ export default function Dashboard() {
 
             <main style={{ flex: 1, overflowY: "auto", minWidth: 0, marginLeft: "248px", padding: 0 }}>
                 {/* Topbar */}
-                <div className="db-topbar">
+                <div className="db-topbar" ref={topbarRef}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                         <span style={{ fontSize: 11, color: "var(--text-dim)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Dashboard</span>
                         <span style={{ color: "var(--text-dim)", fontSize: 14 }}>›</span>
@@ -1415,6 +1361,24 @@ export default function Dashboard() {
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                             <div style={{ width: 7, height: 7, borderRadius: "50%", background: A.emerald, animation: "sbPulse 2s infinite" }} />
                             <span style={{ fontSize: 12, color: "var(--text-muted)", fontWeight: 600 }}>Live · May 28, 2026</span>
+                        </div>
+                        {/* ── Profile chip in topbar ── */}
+                        <div style={{ position: "relative" }}>
+                            <button onClick={() => setUserOpen(o => !o)}
+                                style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 10px 5px 6px", borderRadius: 10, background: userOpen ? "var(--bg-muted)" : "transparent", border: `1px solid ${userOpen ? "var(--border-hi)" : "var(--border)"}`, cursor: "pointer", transition: "all 0.18s", fontFamily: "'Plus Jakarta Sans',sans-serif" }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--bg-muted)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border-hi)"; }}
+                                onMouseLeave={e => { if (!userOpen) { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border)"; } }}>
+                                <div style={{ position: "relative" }}>
+                                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: `linear-gradient(135deg,${A.blue},${A.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 11, color: "#fff" }}>DN</div>
+                                    <div style={{ position: "absolute", bottom: 0, right: 0, width: 8, height: 8, borderRadius: "50%", background: A.emerald, border: "2px solid var(--panel)" }} />
+                                </div>
+                                <div style={{ textAlign: "left" }}>
+                                    <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.2 }}>Daniel Ngwasi</div>
+                                    <div style={{ fontSize: 10, color: "var(--text-muted)" }}>Admin · Business</div>
+                                </div>
+                                <span style={{ fontSize: 10, color: "var(--text-muted)", transition: "transform 0.2s", transform: userOpen ? "rotate(180deg)" : "none" }}>▾</span>
+                            </button>
+                            {userOpen && <UserMenu dark={dark} setDark={setDark} onClose={() => setUserOpen(false)} />}
                         </div>
                     </div>
                 </div>
