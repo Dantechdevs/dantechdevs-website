@@ -195,6 +195,7 @@ export default function LoginPage() {
             <div className={`lr-field ${focused === "password" ? "lr-field--on" : ""}`}>
               <div className="lr-label-row">
                 <label className="lr-label" htmlFor="lr-pass">Password</label>
+                {/* ✅ FIXED: Forgot password link — now fully visible */}
                 <Link href="/auth/forgot-password" className="lr-forgot">Forgot password?</Link>
               </div>
               <div className="lr-input-wrap">
@@ -502,8 +503,17 @@ export default function LoginPage() {
           transition: color 0.2s;
         }
         .lr-field--on .lr-label { color: ${R}; }
-        .lr-forgot { font-size: 12px; color: rgba(140,90,40,0.4); text-decoration: none; font-weight: 500; transition: color 0.2s; }
-        .lr-forgot:hover { color: ${R}; }
+
+        /* ✅ FIXED: Forgot password — was rgba(140,90,40,0.4), now full red brand color */
+        .lr-forgot {
+          font-size: 12px;
+          color: ${R};
+          text-decoration: none;
+          font-weight: 700;
+          transition: color 0.2s;
+          opacity: 0.85;
+        }
+        .lr-forgot:hover { color: ${RD}; opacity: 1; text-decoration: underline; }
 
         .lr-input-wrap { position: relative; }
         .lr-input-icon {
