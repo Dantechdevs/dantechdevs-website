@@ -281,7 +281,7 @@ export default function LoginPage() {
           position: relative; overflow: hidden;
           background: linear-gradient(145deg, #fdf8f3 0%, #ffffff 40%, #fef6ee 70%, #fdf3e8 100%);
         }
-
+// page.tsx 
         /* Warm brown blobs */
         .lr-blob { position: absolute; border-radius: 50%; filter: blur(70px); pointer-events: none; }
         .lr-blob--1 {
