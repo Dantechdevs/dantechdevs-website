@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/client";
 
 interface NavItem {
   label: string;
@@ -34,10 +36,81 @@ const NAV_ITEMS: NavItem[] = [
 const RED = "#e8325a";
 
 export default function Navbar() {
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropOpen, setDropOpen] = useState<string | null>(null);
   const dropRef = useRef<HTMLDivElement>(null);
+
+  // ── Live counts ──
+  const [wishlistCount, setWishlistCount] = useState(0);
+  const [ordersCount, setOrdersCount] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Get current user
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUserId(data.user?.id ?? null);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user?.id ?? null);
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  // Fetch counts whenever userId changes
+  useEffect(() => {
+    if (!userId) {
+      setWishlistCount(0);
+      setOrdersCount(0);
+      return;
+    }
+
+    const fetchCounts = async () => {
+      const [{ count: wc }, { count: oc }] = await Promise.all([
+        supabase
+          .from("wishlist")
+          .select("*", { count: "exact", head: true })
+          .eq("buyer_id", userId),
+        supabase
+          .from("orders")
+          .select("*", { count: "exact", head: true })
+          .eq("buyer_id", userId)
+          .eq("status", "pending"),
+      ]);
+      setWishlistCount(wc ?? 0);
+      setOrdersCount(oc ?? 0);
+    };
+
+    fetchCounts();
+
+    // Realtime: wishlist changes
+    const wishlistSub = supabase
+      .channel("wishlist-count")
+      .on("postgres_changes", {
+        event: "*",
+        schema: "public",
+        table: "wishlist",
+        filter: `buyer_id=eq.${userId}`,
+      }, fetchCounts)
+      .subscribe();
+
+    // Realtime: orders changes
+    const ordersSub = supabase
+      .channel("orders-count")
+      .on("postgres_changes", {
+        event: "*",
+        schema: "public",
+        table: "orders",
+        filter: `buyer_id=eq.${userId}`,
+      }, fetchCounts)
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(wishlistSub);
+      supabase.removeChannel(ordersSub);
+    };
+  }, [userId]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -53,6 +126,11 @@ export default function Navbar() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  const handleUserClick = () => {
+    if (userId) router.push("/dashboard");
+    else router.push("/auth/login");
+  };
 
   return (
     <header className={`dn-nav${scrolled ? " dn-nav--scrolled" : ""}`} role="banner">
@@ -113,14 +191,32 @@ export default function Navbar() {
 
         {/* ── Actions ── */}
         <div className="dn-nav__actions">
-          <button className="dn-icon-btn" aria-label="Search"><SearchIcon /></button>
-          <button className="dn-icon-btn dn-icon-btn--badge" aria-label="Wishlist">
-            <HeartIcon /><span className="dn-badge">0</span>
+          {/* Search */}
+          <button className="dn-icon-btn" aria-label="Search">
+            <SearchIcon />
           </button>
-          <button className="dn-icon-btn" aria-label="Account"><UserIcon /></button>
-          <button className="dn-icon-btn dn-icon-btn--badge" aria-label="Cart">
-            <CartIcon /><span className="dn-badge">0</span>
+
+          {/* Wishlist */}
+          <Link href="/dashboard/wishlist" className="dn-icon-btn dn-icon-btn--badge" aria-label={`Wishlist (${wishlistCount})`}>
+            <HeartIcon />
+            {wishlistCount > 0 && (
+              <span className="dn-badge">{wishlistCount > 99 ? "99+" : wishlistCount}</span>
+            )}
+          </Link>
+
+          {/* Account */}
+          <button className="dn-icon-btn" aria-label={userId ? "My account" : "Sign in"} onClick={handleUserClick}>
+            <UserIcon />
+            {userId && <span className="dn-online-dot" />}
           </button>
+
+          {/* Orders */}
+          <Link href="/dashboard/orders" className="dn-icon-btn dn-icon-btn--badge" aria-label={`Orders (${ordersCount})`}>
+            <CartIcon />
+            {ordersCount > 0 && (
+              <span className="dn-badge">{ordersCount > 99 ? "99+" : ordersCount}</span>
+            )}
+          </Link>
         </div>
 
         {/* ── Burger ── */}
@@ -155,9 +251,18 @@ export default function Navbar() {
           ))}
           <div className="dn-mobile__actions">
             <button className="dn-icon-btn" aria-label="Search"><SearchIcon /></button>
-            <button className="dn-icon-btn" aria-label="Wishlist"><HeartIcon /></button>
-            <button className="dn-icon-btn" aria-label="Account"><UserIcon /></button>
-            <button className="dn-icon-btn" aria-label="Cart"><CartIcon /></button>
+            <Link href="/dashboard/wishlist" className="dn-icon-btn dn-icon-btn--badge" aria-label="Wishlist" onClick={() => setMobileOpen(false)}>
+              <HeartIcon />
+              {wishlistCount > 0 && <span className="dn-badge">{wishlistCount > 99 ? "99+" : wishlistCount}</span>}
+            </Link>
+            <button className="dn-icon-btn" aria-label="Account" onClick={() => { handleUserClick(); setMobileOpen(false); }}>
+              <UserIcon />
+              {userId && <span className="dn-online-dot" />}
+            </button>
+            <Link href="/dashboard/orders" className="dn-icon-btn dn-icon-btn--badge" aria-label="Orders" onClick={() => setMobileOpen(false)}>
+              <CartIcon />
+              {ordersCount > 0 && <span className="dn-badge">{ordersCount > 99 ? "99+" : ordersCount}</span>}
+            </Link>
           </div>
         </div>
       )}
@@ -227,15 +332,31 @@ export default function Navbar() {
           display: flex; align-items: center; justify-content: center;
           border-radius: 10px; border: none; background: transparent;
           color: #555; cursor: pointer; transition: color 0.2s, background 0.2s;
+          text-decoration: none;
         }
         .dn-icon-btn:hover { color: ${RED}; background: rgba(232,50,90,0.06); }
         .dn-icon-btn svg { width: 20px; height: 20px; }
-        .dn-icon-btn--badge .dn-badge {
+
+        /* Badge */
+        .dn-badge {
           position: absolute; top: 4px; right: 4px;
           min-width: 16px; height: 16px; padding: 0 4px;
           background: ${RED}; color: #fff; border-radius: 999px;
           font-size: 0.625rem; font-weight: 700;
           display: flex; align-items: center; justify-content: center;
+          animation: badgePop 0.25s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        @keyframes badgePop {
+          from { transform: scale(0); }
+          to   { transform: scale(1); }
+        }
+
+        /* Online dot for logged-in user */
+        .dn-online-dot {
+          position: absolute; bottom: 6px; right: 6px;
+          width: 7px; height: 7px; border-radius: 50%;
+          background: #22c55e;
+          border: 1.5px solid #fff;
         }
 
         /* Burger */
